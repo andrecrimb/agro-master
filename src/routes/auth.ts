@@ -6,6 +6,8 @@ import User from '../models/user'
 
 const router = express.Router()
 
+router.get('/users', isAuthSuperUser, authController.getUsers)
+
 router.post(
   '/user',
   isAuthSuperUser,

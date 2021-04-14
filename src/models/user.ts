@@ -2,6 +2,7 @@ import { DataTypes, Model, Optional } from 'sequelize'
 import sequelize from '../config/sequelize'
 import { CreationOptionals, ModelAttrDefaults } from '../types/sequelize'
 import { modelAttrDefaults } from '../utils/sequelize'
+import Phonebook from '../models/phonebook'
 
 type UserAttributes = ModelAttrDefaults & {
   firstName: string
@@ -48,5 +49,8 @@ const User = sequelize.define<UserInstance>('User', {
     defaultValue: 'user'
   }
 })
+
+User.belongsToMany(Phonebook, { through: 'UserPhonebook' })
+Phonebook.belongsToMany(User, { through: 'UserPhonebook' })
 
 export default User

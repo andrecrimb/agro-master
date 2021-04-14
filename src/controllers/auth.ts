@@ -4,6 +4,7 @@ import { validationResult } from 'express-validator'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 import { AuthTokenPayload } from '../types/auth'
+import Phonebook from '../models/phonebook'
 
 const addNewUser: RequestHandler = async (req, res) => {
   const errors = validationResult(req)
@@ -57,4 +58,18 @@ const login: RequestHandler = async (req, res) => {
   }
 }
 
-export default { addNewUser, login }
+const getUsers: RequestHandler = async (req, res) => {
+  try {
+    const users = await User.findAndCountAll({
+      limit: Number(req.query.limit) || undefined,
+      offset: Number(req.query.offset) || undefined,
+      include: Phonebook
+    })
+
+    return res.status(200).json(users)
+  } catch (e) {
+    res.status(e.statusCode || 500).json(e)
+  }
+}
+
+export default { addNewUser, login, getUsers }
