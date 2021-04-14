@@ -49,7 +49,7 @@ const login: RequestHandler = async (req, res) => {
     }
 
     const tokenPayload: AuthTokenPayload = { email, id: user.id }
-    const token = jwt.sign(tokenPayload, process.env.JWT_SECRET + '', { expiresIn: 60 })
+    const token = jwt.sign(tokenPayload, process.env.JWT_SECRET + '', { expiresIn: '7d' })
 
     res.status(200).json({ token, email, id: user.id })
   } catch (e) {

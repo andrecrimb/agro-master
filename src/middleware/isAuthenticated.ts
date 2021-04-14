@@ -5,24 +5,23 @@ import { AuthTokenPayload } from '../types/auth'
 
 const isAuthenticated: RequestHandler = async (req, res, next) => {
   const token = req.get('Authorization')?.split(' ')[1]
-
   try {
-    const decodedToken = jwt.verify(token + '', process.env.JWT_SECRET + '') as
-      | AuthTokenPayload
-      | undefined
+    const decodedToken = (await jwt.verify(
+      token + '',
+      process.env.JWT_SECRET + ''
+    )) as AuthTokenPayload
 
-    if (!decodedToken) {
-      return res.status(401).json({ error: 'not_authenticated' })
-    }
-
-    const user = await User.findByPk(decodedToken.id)
+    const user = await User.findOne({ where: { id: decodedToken.id, role: 'superuser' } })
 
     if (!user) {
       return res.status(401).json({ error: 'not_authenticated' })
     }
     next()
-  } catch {
-    res.status(500)
+  } catch (e) {
+    if (e.name && e.message) {
+      return res.status(401).json({ error: 'not_authenticated' })
+    }
+    return res.status(500).json({})
   }
 }
 
