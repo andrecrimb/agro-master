@@ -1,14 +1,31 @@
-import { DataTypes } from 'sequelize'
+import { DataTypes, Model, Optional } from 'sequelize'
 import sequelize from '../config/sequelize'
+import { CreationOptionals, ModelAttrDefaults } from '../types/sequelize'
+import { modelAttrDefaults } from '../utils/sequelize'
 
-const User = sequelize.define('User', {
+type UserAttributes = ModelAttrDefaults & {
+  firstName: string
+  lastName: string
+  email: string
+  password: string
+  active: boolean
+  role: 'user' | 'superuser'
+}
+
+interface UserCreationAttributes
+  extends Optional<UserAttributes, CreationOptionals | 'active' | 'lastName'> {}
+
+interface UserInstance extends Model<UserAttributes, UserCreationAttributes>, UserAttributes {}
+
+const User = sequelize.define<UserInstance>('User', {
+  ...modelAttrDefaults,
   firstName: {
     type: DataTypes.STRING,
     allowNull: false
   },
   lastName: {
     type: DataTypes.STRING,
-    allowNull: false
+    defaultValue: ''
   },
   email: {
     type: DataTypes.STRING,
@@ -27,8 +44,8 @@ const User = sequelize.define('User', {
     defaultValue: true
   },
   role: {
-    type: DataTypes.ENUM('admin', 'operator'),
-    defaultValue: 'admin'
+    type: DataTypes.ENUM('user', 'superuser'),
+    defaultValue: 'user'
   }
 })
 

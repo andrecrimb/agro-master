@@ -1,7 +1,12 @@
 import { DataTypes } from 'sequelize'
 import sequelize from '../config/sequelize'
+import { SequelizeModel } from '../types/sequelize'
 
-const Rootstock = sequelize.define('Rootstock', {
+interface RootstockInstance extends SequelizeModel {
+  name: string
+}
+
+const Rootstock = sequelize.define<RootstockInstance>('Rootstock', {
   name: {
     type: DataTypes.STRING,
     allowNull: false,

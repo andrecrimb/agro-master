@@ -2,10 +2,9 @@ import User from '../models/user'
 import { RequestHandler } from 'express'
 import { validationResult } from 'express-validator'
 import bcrypt from 'bcryptjs'
-type User = {
-  email: string
-  password: string
-}
+import jwt from 'jsonwebtoken'
+import { AuthTokenPayload } from '../types/auth'
+
 const addNewUser: RequestHandler = async (req, res) => {
   const errors = validationResult(req)
   if (!errors.isEmpty()) {
@@ -41,10 +40,18 @@ const login: RequestHandler = async (req, res) => {
     const user = await User.findOne({ where: { email } })
 
     if (!user) {
-      return res.status(401).json({})
+      return res.status(401).json({ error: 'email_not_found' })
     }
 
-    // const samePass = await bcrypt.compare(password, user.password)
+    const samePass = await bcrypt.compare(password, user.password)
+    if (!samePass) {
+      return res.status(401).json({ error: 'wrong_password' })
+    }
+
+    const tokenPayload: AuthTokenPayload = { email, id: user.id }
+    const token = jwt.sign(tokenPayload, process.env.JWT_SECRET + '', { expiresIn: 60 })
+
+    res.status(200).json({ token, email, id: user.id })
   } catch (e) {
     res.status(e.statusCode || 500).json(e)
   }
