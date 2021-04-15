@@ -19,7 +19,11 @@ const addNewUser: RequestHandler = async (req, res) => {
 
     const hashedPw = await bcrypt.hash(password, 12)
 
-    const newUser = await User.create({ ...requestValues, password: hashedPw })
+    const newUser = await User.create(
+      { ...requestValues, password: hashedPw },
+      { include: [Phonebook] }
+    )
+
     res.status(201).json(newUser)
   } catch (e) {
     res.status(e.statusCode || 500).json(e)
@@ -62,8 +66,7 @@ const getUsers: RequestHandler = async (req, res) => {
   try {
     const users = await User.findAndCountAll({
       limit: Number(req.query.limit) || undefined,
-      offset: Number(req.query.offset) || undefined,
-      include: Phonebook
+      offset: Number(req.query.offset) || undefined
     })
 
     return res.status(200).json(users)

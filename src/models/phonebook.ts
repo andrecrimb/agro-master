@@ -1,7 +1,8 @@
-import sequelize from '../config/sequelize'
-import { DataTypes, Model, Optional } from 'sequelize'
-import { modelAttrDefaults } from '../utils/sequelize'
-import { ModelAttrDefaults, CreationOptionals } from '../types/sequelize'
+import { Table, Column, Model, AllowNull, BelongsToMany } from 'sequelize-typescript'
+import { Optional } from 'sequelize'
+import { CreationOptionals, ModelAttrDefaults } from '../types/sequelize'
+import User from './user'
+import UserPhonebook from './userPhonebook'
 
 type PhonebookAttributes = ModelAttrDefaults & {
   label: string
@@ -9,21 +10,18 @@ type PhonebookAttributes = ModelAttrDefaults & {
 }
 
 interface PhonebookCreationAttributes extends Optional<PhonebookAttributes, CreationOptionals> {}
+@Table
+class Phonebook extends Model<PhonebookAttributes, PhonebookCreationAttributes> {
+  @AllowNull(false)
+  @Column
+  label: string
 
-interface PhonebookInstance
-  extends Model<PhonebookAttributes, PhonebookCreationAttributes>,
-    PhonebookAttributes {}
+  @AllowNull(false)
+  @Column
+  phoneNumber: string
 
-const Phonebook = sequelize.define<PhonebookInstance>('Phonebook', {
-  ...modelAttrDefaults,
-  label: {
-    type: DataTypes.STRING,
-    allowNull: false
-  },
-  phoneNumber: {
-    type: DataTypes.STRING,
-    allowNull: false
-  }
-})
+  @BelongsToMany(() => User, () => UserPhonebook)
+  users: User[]
+}
 
 export default Phonebook

@@ -1,8 +1,17 @@
-import { DataTypes, Model, Optional } from 'sequelize'
-import sequelize from '../config/sequelize'
-import { CreationOptionals, ModelAttrDefaults } from '../types/sequelize'
-import { modelAttrDefaults } from '../utils/sequelize'
 import Phonebook from '../models/phonebook'
+import {
+  Table,
+  Column,
+  Model as Model,
+  AllowNull,
+  Default,
+  Unique,
+  IsEmail,
+  BelongsToMany
+} from 'sequelize-typescript'
+import UserPhonebook from './userPhonebook'
+import { CreationOptionals, ModelAttrDefaults } from '../types/sequelize'
+import { Optional } from 'sequelize'
 
 type UserAttributes = ModelAttrDefaults & {
   firstName: string
@@ -16,41 +25,36 @@ type UserAttributes = ModelAttrDefaults & {
 interface UserCreationAttributes
   extends Optional<UserAttributes, CreationOptionals | 'active' | 'lastName'> {}
 
-interface UserInstance extends Model<UserAttributes, UserCreationAttributes>, UserAttributes {}
+@Table
+class User extends Model<UserAttributes, UserCreationAttributes> {
+  @AllowNull(false)
+  @Column
+  firstName: string
 
-const User = sequelize.define<UserInstance>('User', {
-  ...modelAttrDefaults,
-  firstName: {
-    type: DataTypes.STRING,
-    allowNull: false
-  },
-  lastName: {
-    type: DataTypes.STRING,
-    defaultValue: ''
-  },
-  email: {
-    type: DataTypes.STRING,
-    allowNull: false,
-    unique: true,
-    validate: {
-      isEmail: true
-    }
-  },
-  password: {
-    type: DataTypes.STRING,
-    allowNull: false
-  },
-  active: {
-    type: DataTypes.BOOLEAN,
-    defaultValue: true
-  },
-  role: {
-    type: DataTypes.ENUM('user', 'superuser'),
-    defaultValue: 'user'
-  }
-})
+  @Default('')
+  @Column
+  lastName: string
 
-User.belongsToMany(Phonebook, { through: 'UserPhonebook' })
-Phonebook.belongsToMany(User, { through: 'UserPhonebook' })
+  @AllowNull(false)
+  @IsEmail
+  @Unique
+  @Column
+  email: string
+
+  @AllowNull(false)
+  @Column
+  password: string
+
+  @Default(true)
+  @Column
+  active: boolean
+
+  @Default('user')
+  @Column
+  role: 'user' | 'superuser'
+
+  @BelongsToMany(() => Phonebook, () => UserPhonebook)
+  phonebook: Phonebook[]
+}
 
 export default User

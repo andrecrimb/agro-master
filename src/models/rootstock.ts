@@ -1,19 +1,19 @@
-import { DataTypes } from 'sequelize'
-import sequelize from '../config/sequelize'
-import { SequelizeModel } from '../types/sequelize'
+import { Optional } from 'sequelize'
+import { CreationOptionals, ModelAttrDefaults } from '../types/sequelize'
+import { Table, Column, Model, AllowNull, NotEmpty } from 'sequelize-typescript'
 
-interface RootstockInstance extends SequelizeModel {
+type RootstockAttributes = ModelAttrDefaults & {
   name: string
 }
 
-const Rootstock = sequelize.define<RootstockInstance>('Rootstock', {
-  name: {
-    type: DataTypes.STRING,
-    allowNull: false,
-    validate: {
-      notEmpty: true
-    }
-  }
-})
+interface RootstockCreationAttributes extends Optional<RootstockAttributes, CreationOptionals> {}
+
+@Table
+class Rootstock extends Model<RootstockAttributes, RootstockCreationAttributes> {
+  @AllowNull(false)
+  @NotEmpty
+  @Column
+  name: string
+}
 
 export default Rootstock
