@@ -2,7 +2,7 @@ import express from 'express'
 import helmet from 'helmet'
 import prisma from './client'
 import authRoutes from './routes/auth'
-import rootstockRoutes from 'routes/rootstock'
+import rootstockRoutes from './routes/rootstock'
 import bcrypt from 'bcryptjs'
 
 const PORT = process.env.PORT || 8080

@@ -23,7 +23,6 @@ const addNewUser: RequestHandler = async (req, res) => {
 
     res.status(201).json(newUser)
   } catch (e) {
-    console.log(e)
     res.status(e.statusCode || 500).json(e)
   }
 }
