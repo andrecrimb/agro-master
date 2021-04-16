@@ -1,6 +1,6 @@
 import { RequestHandler } from 'express'
 import jwt from 'jsonwebtoken'
-import User from '../models/user'
+import prisma from '../config/prismaInstance'
 import { AuthTokenPayload } from '../types/auth'
 
 const isSuperUser: RequestHandler = async (req, res, next) => {
@@ -11,7 +11,7 @@ const isSuperUser: RequestHandler = async (req, res, next) => {
       process.env.JWT_SECRET + ''
     )) as AuthTokenPayload
 
-    const user = await User.findOne({ where: { id: decodedToken.id, role: 'superuser' } })
+    const user = await prisma.user.findFirst({ where: { id: decodedToken.id, role: 'superuser' } })
 
     if (!user) {
       return res.status(403).json({})
