@@ -1,6 +1,6 @@
 import { RequestHandler } from 'express'
 import jwt from 'jsonwebtoken'
-import prisma from '../config/prismaInstance'
+import prisma from '../client'
 import { AuthTokenPayload } from '../types/auth'
 
 const isAuthenticated: RequestHandler = async (req, res, next) => {

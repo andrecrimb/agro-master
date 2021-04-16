@@ -3,9 +3,9 @@ import { validationResult } from 'express-validator'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 import { AddUserBody, AuthTokenPayload } from '../types/auth'
-import prisma from '../config/prismaInstance'
+import prisma from '../client'
 
-const addNewUser: RequestHandler<undefined, any, AddUserBody> = async (req, res) => {
+const addNewUser: RequestHandler = async (req, res) => {
   const errors = validationResult(req)
 
   if (!errors.isEmpty()) {
@@ -13,9 +13,8 @@ const addNewUser: RequestHandler<undefined, any, AddUserBody> = async (req, res)
   }
 
   try {
-    const {
-      body: { password, phoneNumbers, ...requestValues }
-    } = req
+    const reqBody = req.body as AddUserBody
+    const { password, phoneNumbers, ...requestValues } = reqBody
 
     const hashedPw = await bcrypt.hash(password, 12)
     const newUser = await prisma.user.create({

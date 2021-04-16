@@ -1,4 +1,4 @@
-import prisma from '../config/prismaInstance'
+import prisma from '../client'
 import { RequestHandler } from 'express'
 import { validationResult } from 'express-validator'
 

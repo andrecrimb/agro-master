@@ -2,7 +2,7 @@ import express from 'express'
 import { body } from 'express-validator'
 import authController from '../controllers/auth'
 import isAuthSuperUser from '../middleware/isAuthSuperUser'
-import prisma from '../config/prismaInstance'
+import prisma from '../client'
 
 const router = express.Router()
 
