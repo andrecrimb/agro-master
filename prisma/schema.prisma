@@ -10,29 +10,35 @@ generator client {
   provider = "prisma-client-js"
 }
 
-model PhoneNumber {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  label  String @db.Char(255)
-  number String @db.Char(255)
-
-  users User[]
-}
-
 model User {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  firstName String @db.Char(255)
-  lastName  String @default("") @db.Char(255)
-  email     String @unique
-  password  String @db.Char(255)
-  role      Role   @default(user)
+  firstName   String  @db.Char(100)
+  lastName    String  @default("") @db.Char(100)
+  nickname    String  @default("") @db.Char(100)
+  email       String  @unique
+  password    String  @db.Char(255)
+  isSuperuser Boolean @default(false)
+  isEmployee  Boolean @default(false)
+  active      Boolean @default(true)
 
-  phoneNumbers PhoneNumber[]
+  phoneNumbers    PhoneNumber[]
+  orders          Order[]
+  seedlingBenches SeedlingBench[]
+}
+
+model PhoneNumber {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  label  String @db.Char(50)
+  number String @db.Char(50)
+
+  users     User[]
+  customers Customer[]
 }
 
 model Rootstock {
@@ -40,10 +46,228 @@ model Rootstock {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  name String @db.Char(255)
+  name String @db.Char(50)
+
+  rootstockOrderItems RootstockOrderItem[]
+  seedlingBenches     SeedlingBench[]
 }
 
-enum Role {
-  user
-  superuser
+model Customer {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name     String  @db.Char(100)
+  lastName String  @db.Char(100)
+  nickname String  @default("") @db.Char(100)
+  active   Boolean @default(true)
+
+  address String @db.Char(100)
+  zip     String @db.Char(50)
+  city    String @db.Char(50)
+  state   String @db.Char(50)
+  country String @db.Char(50)
+
+  phoneNumbers PhoneNumber[]
+  properties   CustomerProperty[]
+}
+
+model Property {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  producerName String @db.Char(100)
+  name         String @db.Char(100)
+  cnpj         String @db.Char(50)
+  cpf          String @db.Char(50)
+  ie           String @db.Char(50)
+
+  address String @db.Char(100)
+  zip     String @db.Char(50)
+  city    String @db.Char(50)
+  state   String @db.Char(50)
+  country String @db.Char(50)
+
+  customers       CustomerProperty[]
+  ownerProperties OwnerProperty[]
+}
+
+model OwnerProperty {
+  id Int @id @default(autoincrement())
+
+  property   Property @relation(fields: [propertyId], references: [id])
+  propertyId Int
+
+  greenhouses Greenhouse[]
+}
+
+model CustomerProperty {
+  createdAt DateTime @default(now())
+
+  customer   Customer @relation(fields: [customerId], references: [id])
+  customerId Int
+  property   Property @relation(fields: [propertyId], references: [id])
+  propertyId Int
+
+  orders Order[]
+  @@id([customerId, propertyId])
+}
+
+model Greenhouse {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  label String         @db.Char(50)
+  type  GreenhouseType
+
+  ownerProperty   OwnerProperty @relation(fields: [ownerPropertyId], references: [id])
+  ownerPropertyId Int
+
+  borbulhaOrderItems BorbulhaOrderItem[]
+  seedlingBenches    SeedlingBench[]
+}
+
+enum GreenhouseType {
+  borbulha
+  seedling
+}
+
+model SeedlingBench {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name             String   @db.Char(50)
+  quantity         Int
+  lastPlantingDate DateTime
+  firstPaymentDate DateTime
+
+  greenhouse   Greenhouse @relation(fields: [greenhouseId], references: [id])
+  greenhouseId Int
+
+  rootstock   Rootstock @relation(fields: [rootstockId], references: [id])
+  rootstockId Int
+
+  // Responsible for the bench
+  user   User @relation(fields: [userId], references: [id])
+  userId Int
+
+  seedlingBenchOrderItems SeedlingBenchOrderItem[]
+}
+
+model Order {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  type               OrderType
+  orderDate          DateTime
+  deliveryDate       DateTime
+  nfNumber           String    @db.Char(50)
+  installmentsNumber Int       @default(1)
+
+  // Who registered the order
+  user   User @relation(fields: [userId], references: [id])
+  userId Int
+
+  customerProperty   CustomerProperty @relation(fields: [customerId, customerPropertyId], references: [customerId, propertyId])
+  customerId         Int
+  customerPropertyId Int
+
+  payments OrderPayment[]
+
+  fruitOrderItems         FruitOrderItem[]
+  seedOrderItems          SeedOrderItem[]
+  rootstockOrderItems     RootstockOrderItem[]
+  borbulhaOrderItems      BorbulhaOrderItem[]
+  seedlingBenchOrderItems SeedlingBenchOrderItem[]
+}
+
+enum OrderType {
+  seed
+  seedling
+  rootstock
+  borbulha
+  fruit
+}
+
+model OrderPayment {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  amount        Float
+  method        PaymentMethod @default(money)
+  scheduledDate DateTime
+  received      Boolean       @default(false)
+
+  order   Order @relation(fields: [orderId], references: [id])
+  orderId Int
+}
+
+enum PaymentMethod {
+  cheque
+  money
+}
+
+model FruitOrderItem {
+  id Int @id @default(autoincrement())
+
+  quantity Int
+  boxPrice Float
+
+  order   Order @relation(fields: [orderId], references: [id])
+  orderId Int
+}
+
+model SeedOrderItem {
+  id Int @id @default(autoincrement())
+
+  name     String @db.Char(50)
+  quantity Int
+  kgPrice  Float
+
+  order   Order @relation(fields: [orderId], references: [id])
+  orderId Int
+}
+
+model RootstockOrderItem {
+  id Int @id @default(autoincrement())
+
+  quantity   Int
+  unityPrice Float
+
+  order       Order     @relation(fields: [orderId], references: [id])
+  orderId     Int
+  rootstock   Rootstock @relation(fields: [rootstockId], references: [id])
+  rootstockId Int
+}
+
+model BorbulhaOrderItem {
+  id Int @id @default(autoincrement())
+
+  name       String @db.Char(50)
+  quantity   Int
+  unityPrice Float
+
+  greenhouse   Greenhouse @relation(fields: [greenhouseId], references: [id])
+  greenhouseId Int
+
+  order   Order @relation(fields: [orderId], references: [id])
+  orderId Int
+}
+
+model SeedlingBenchOrderItem {
+  id Int @id @default(autoincrement())
+
+  quantity   Int
+  unityPrice Float
+
+  seedlingBench   SeedlingBench @relation(fields: [seedlingBenchId], references: [id])
+  seedlingBenchId Int
+
+  order   Order @relation(fields: [orderId], references: [id])
+  orderId Int
 }
