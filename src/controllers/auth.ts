@@ -14,7 +14,7 @@ const addNewUser: RequestHandler = async (req, res) => {
 
   try {
     const reqBody = req.body as AddUserBody
-    const { password, phoneNumbers, ...requestValues } = reqBody
+    const { password, phoneNumbers = [], ...requestValues } = reqBody
 
     const hashedPw = await bcrypt.hash(password, 12)
     const newUser = await prisma.user.create({
@@ -23,6 +23,7 @@ const addNewUser: RequestHandler = async (req, res) => {
 
     res.status(201).json(newUser)
   } catch (e) {
+    console.log(e)
     res.status(e.statusCode || 500).json(e)
   }
 }
@@ -68,4 +69,35 @@ const getUsers: RequestHandler = async (req, res) => {
   }
 }
 
-export default { addNewUser, login, getUsers }
+const getUser: RequestHandler = async (req, res) => {
+  const token = req.get('Authorization')?.split(' ')[1]
+  try {
+    const decodedToken = (await jwt.verify(
+      token + '',
+      process.env.JWT_SECRET + ''
+    )) as AuthTokenPayload
+
+    const user = await prisma.user.findUnique({
+      where: { id: decodedToken.id },
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+        firstName: true,
+        lastName: true,
+        nickname: true,
+        email: true,
+        isSuperuser: true,
+        isEmployee: true,
+        active: true
+      }
+    })
+
+    return res.status(200).json(user)
+  } catch (e) {
+    console.log(e)
+    res.status(500).json(e)
+  }
+}
+
+export default { addNewUser, login, getUser, getUsers }

@@ -16,8 +16,8 @@ app.use((_, res, next) => {
   next()
 })
 
-app.use(authRoutes)
-app.use(rootstockRoutes)
+app.use('/api', authRoutes)
+app.use('/api', rootstockRoutes)
 
 app.listen(PORT, async () => {
   console.log(`Running on ${PORT} ⚡`)
@@ -31,7 +31,7 @@ app.listen(PORT, async () => {
         firstName: 'root',
         email: process.env.ROOT_EMAIL + '',
         password: hashedPw,
-        role: 'superuser'
+        isSuperuser: true
       }
     })
   }

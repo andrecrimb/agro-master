@@ -11,7 +11,7 @@ const isSuperUser: RequestHandler = async (req, res, next) => {
       process.env.JWT_SECRET + ''
     )) as AuthTokenPayload
 
-    const user = await prisma.user.findFirst({ where: { id: decodedToken.id, role: 'superuser' } })
+    const user = await prisma.user.findFirst({ where: { id: decodedToken.id, isSuperuser: true } })
 
     if (!user) {
       return res.status(403).json({})
