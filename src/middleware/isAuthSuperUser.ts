@@ -16,6 +16,8 @@ const isSuperUser: RequestHandler = async (req, res, next) => {
     if (!user) {
       return res.status(403).json({})
     }
+
+    res.locals.user = user
     next()
   } catch (e) {
     if (e.name && e.message) {

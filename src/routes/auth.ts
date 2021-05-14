@@ -18,13 +18,13 @@ router.post(
       .isEmail()
       .custom(value => {
         return prisma.user.findFirst({ where: { email: value } }).then(userFound => {
-          if (userFound) return Promise.reject('duplicated')
+          if (userFound) return Promise.reject('email_duplicated')
         })
       })
       .bail()
       .normalizeEmail(),
-    body('firstName').trim().notEmpty(),
-    body('password').trim().isLength({ min: 5 })
+    body('firstName').trim().notEmpty().withMessage('field_empty'),
+    body('password').trim().isLength({ min: 5 }).withMessage('short_password')
   ],
   authController.addNewUser
 )

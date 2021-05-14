@@ -4,6 +4,7 @@ import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 import { AddUserBody, AuthTokenPayload } from '../types/auth'
 import prisma from '../client'
+import { User } from '.prisma/client'
 
 const addNewUser: RequestHandler = async (req, res) => {
   const errors = validationResult(req)
@@ -62,23 +63,9 @@ const login: RequestHandler = async (req, res) => {
 
 const getUsers: RequestHandler = async (req, res) => {
   try {
-    const users = await prisma.user.findMany()
-    return res.status(200).json(users)
-  } catch (e) {
-    res.status(e.statusCode || 500).json(e)
-  }
-}
-
-const getUser: RequestHandler = async (req, res) => {
-  const token = req.get('Authorization')?.split(' ')[1]
-  try {
-    const decodedToken = (await jwt.verify(
-      token + '',
-      process.env.JWT_SECRET + ''
-    )) as AuthTokenPayload
-
-    const user = await prisma.user.findUnique({
-      where: { id: decodedToken.id },
+    const currentUser = res.locals.user as User
+    const users = await prisma.user.findMany({
+      where: { id: { not: currentUser.id }, isEmployee: false },
       select: {
         id: true,
         createdAt: true,
@@ -92,7 +79,30 @@ const getUser: RequestHandler = async (req, res) => {
         active: true
       }
     })
+    return res.status(200).json(users)
+  } catch (e) {
+    res.status(e.statusCode || 500).json(e)
+  }
+}
 
+const getUser: RequestHandler = async (req, res) => {
+  try {
+    const currentUser = res.locals.user as User
+    const user = await prisma.user.findUnique({
+      where: { id: currentUser.id },
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+        firstName: true,
+        lastName: true,
+        nickname: true,
+        email: true,
+        isSuperuser: true,
+        isEmployee: true,
+        active: true
+      }
+    })
     return res.status(200).json(user)
   } catch (e) {
     console.log(e)

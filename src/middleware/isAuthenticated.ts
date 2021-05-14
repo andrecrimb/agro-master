@@ -16,6 +16,8 @@ const isAuthenticated: RequestHandler = async (req, res, next) => {
     if (!user) {
       return res.status(401).json({ error: 'not_authenticated' })
     }
+
+    res.locals.user = user
     next()
   } catch (e) {
     if (e.name && e.message) {
