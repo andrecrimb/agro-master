@@ -68,8 +68,6 @@ const getUsers: RequestHandler = async (req, res) => {
       where: { id: { not: currentUser.id }, isEmployee: false },
       select: {
         id: true,
-        createdAt: true,
-        updatedAt: true,
         firstName: true,
         lastName: true,
         nickname: true,
@@ -92,8 +90,6 @@ const getUser: RequestHandler = async (req, res) => {
       where: { id: currentUser.id },
       select: {
         id: true,
-        createdAt: true,
-        updatedAt: true,
         firstName: true,
         lastName: true,
         nickname: true,
