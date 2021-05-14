@@ -2,6 +2,7 @@ import express from 'express'
 import helmet from 'helmet'
 import prisma from './client'
 import authRoutes from './routes/auth'
+import userRoutes from './routes/user'
 import rootstockRoutes from './routes/rootstock'
 import bcrypt from 'bcryptjs'
 
@@ -17,6 +18,7 @@ app.use((_, res, next) => {
 })
 
 app.use('/api', authRoutes)
+app.use('/api', userRoutes)
 app.use('/api', rootstockRoutes)
 
 app.listen(PORT, async () => {
