@@ -74,7 +74,8 @@ const getUsers: RequestHandler = async (req, res) => {
         email: true,
         isSuperuser: true,
         isEmployee: true,
-        active: true
+        active: true,
+        phoneNumbers: { select: { id: true, label: true, number: true } }
       }
     })
     return res.status(200).json(users)
@@ -96,7 +97,8 @@ const getUser: RequestHandler = async (req, res) => {
         email: true,
         isSuperuser: true,
         isEmployee: true,
-        active: true
+        active: true,
+        phoneNumbers: { select: { id: true, label: true, number: true } }
       }
     })
     return res.status(200).json(user)
