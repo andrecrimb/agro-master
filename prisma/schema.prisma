@@ -15,11 +15,11 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  firstName   String  @db.Char(100)
-  lastName    String  @default("") @db.Char(100)
-  nickname    String  @default("") @db.Char(100)
+  firstName   String
+  lastName    String  @default("")
+  nickname    String  @default("")
   email       String  @unique
-  password    String  @db.Char(255)
+  password    String  @db.VarChar(255)
   isSuperuser Boolean @default(false)
   isEmployee  Boolean @default(false)
   active      Boolean @default(true)
@@ -34,8 +34,8 @@ model PhoneNumber {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  label  String @db.Char(50)
-  number String @db.Char(50)
+  label  String
+  number String
 
   users     User[]
   customers Customer[]
@@ -46,7 +46,7 @@ model Rootstock {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  name String @db.Char(50)
+  name String
 
   rootstockOrderItems RootstockOrderItem[]
   seedlingBenches     SeedlingBench[]
@@ -57,16 +57,16 @@ model Customer {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  name     String  @db.Char(100)
-  lastName String  @db.Char(100)
-  nickname String  @default("") @db.Char(100)
+  name     String
+  lastName String
+  nickname String  @default("")
   active   Boolean @default(true)
 
-  address String @db.Char(100)
-  zip     String @db.Char(50)
-  city    String @db.Char(50)
-  state   String @db.Char(50)
-  country String @db.Char(50)
+  address String
+  zip     String
+  city    String
+  state   String
+  country String
 
   phoneNumbers PhoneNumber[]
   properties   CustomerProperty[]
@@ -77,17 +77,17 @@ model Property {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  producerName String @db.Char(100)
-  name         String @db.Char(100)
-  cnpj         String @db.Char(50)
-  cpf          String @db.Char(50)
-  ie           String @db.Char(50)
+  producerName String
+  name         String
+  cnpj         String @unique
+  cpf          String
+  ie           String
 
-  address String @db.Char(100)
-  zip     String @db.Char(50)
-  city    String @db.Char(50)
-  state   String @db.Char(50)
-  country String @db.Char(50)
+  address String
+  zip     String
+  city    String
+  state   String
+  country String @default("Brazil")
 
   customers       CustomerProperty[]
   ownerProperties OwnerProperty[]
@@ -119,7 +119,7 @@ model Greenhouse {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  label String         @db.Char(50)
+  label String
   type  GreenhouseType
 
   ownerProperty   OwnerProperty @relation(fields: [ownerPropertyId], references: [id])
@@ -139,7 +139,7 @@ model SeedlingBench {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  name             String   @db.Char(50)
+  name             String
   quantity         Int
   lastPlantingDate DateTime
   firstPaymentDate DateTime
@@ -165,7 +165,7 @@ model Order {
   type               OrderType
   orderDate          DateTime
   deliveryDate       DateTime
-  nfNumber           String    @db.Char(50)
+  nfNumber           String
   installmentsNumber Int       @default(1)
 
   // Who registered the order
@@ -225,7 +225,7 @@ model FruitOrderItem {
 model SeedOrderItem {
   id Int @id @default(autoincrement())
 
-  name     String @db.Char(50)
+  name     String
   quantity Int
   kgPrice  Float
 
@@ -248,7 +248,7 @@ model RootstockOrderItem {
 model BorbulhaOrderItem {
   id Int @id @default(autoincrement())
 
-  name       String @db.Char(50)
+  name       String
   quantity   Int
   unityPrice Float
 
