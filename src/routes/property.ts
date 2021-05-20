@@ -8,6 +8,13 @@ const router = express.Router()
 
 router.get('/owner-properties', isAuthSuperUser, propertyController.getOwnerProperties)
 
+router.delete(
+  '/owner-properties/:ownerPropertyId',
+  isAuthSuperUser,
+  param('ownerPropertyId').exists().toInt(),
+  propertyController.deleteOwnerProperty
+)
+
 router.post(
   '/owner-properties',
   isAuthSuperUser,

@@ -75,4 +75,21 @@ const getOwnerProperties: RequestHandler = async (req, res) => {
   }
 }
 
-export default { getOwnerProperties, addNewOwnerProperty, editOwnerProperty }
+const deleteOwnerProperty: RequestHandler = async (req, res) => {
+  const params = req.params as unknown as { ownerPropertyId: number }
+  const errors = validationResult(req)
+
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() })
+  }
+
+  try {
+    const property = await prisma.ownerProperty.delete({ where: { id: params.ownerPropertyId } })
+    res.status(201).json(property)
+  } catch (e) {
+    console.log(e)
+    res.status(e.statusCode || 500).json(e)
+  }
+}
+
+export default { getOwnerProperties, deleteOwnerProperty, addNewOwnerProperty, editOwnerProperty }
