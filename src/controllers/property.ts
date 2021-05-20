@@ -1,7 +1,7 @@
 import { RequestHandler } from 'express'
 import prisma from '../client'
 import { validationResult } from 'express-validator'
-import { AddOwnerPropertyBody } from '../types/property'
+import { AddOwnerPropertyBody, EditOwnerPropertyBody } from '../types/property'
 
 const addNewOwnerProperty: RequestHandler = async (req, res) => {
   const errors = validationResult(req)
@@ -18,6 +18,29 @@ const addNewOwnerProperty: RequestHandler = async (req, res) => {
     })
 
     res.status(201).json(newProperty)
+  } catch (e) {
+    console.log(e)
+    res.status(e.statusCode || 500).json(e)
+  }
+}
+
+const editOwnerProperty: RequestHandler = async (req, res) => {
+  const params = req.params as unknown as { ownerPropertyId: number }
+  const errors = validationResult(req)
+
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() })
+  }
+
+  try {
+    const requestValues = req.body as EditOwnerPropertyBody
+
+    const property = await prisma.ownerProperty.update({
+      where: { id: params.ownerPropertyId },
+      data: { property: { update: requestValues } }
+    })
+
+    res.status(201).json(property)
   } catch (e) {
     console.log(e)
     res.status(e.statusCode || 500).json(e)
@@ -52,4 +75,4 @@ const getOwnerProperties: RequestHandler = async (req, res) => {
   }
 }
 
-export default { getOwnerProperties, addNewOwnerProperty }
+export default { getOwnerProperties, addNewOwnerProperty, editOwnerProperty }
