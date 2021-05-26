@@ -4,6 +4,7 @@ import prisma from './client'
 import authRoutes from './routes/auth'
 import userRoutes from './routes/user'
 import rootstockRoutes from './routes/rootstock'
+import customerRoutes from './routes/customer'
 import propertyRoutes from './routes/property'
 import bcrypt from 'bcryptjs'
 
@@ -22,6 +23,7 @@ app.use('/api', authRoutes)
 app.use('/api', userRoutes)
 app.use('/api', rootstockRoutes)
 app.use('/api', propertyRoutes)
+app.use('/api', customerRoutes)
 
 app.listen(PORT, async () => {
   console.log(`Running on ${PORT} ⚡`)

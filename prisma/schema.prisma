@@ -57,16 +57,16 @@ model Customer {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  name     String
-  lastName String
-  nickname String  @default("")
-  active   Boolean @default(true)
+  firstName String
+  lastName  String
+  nickname  String  @default("")
+  active    Boolean @default(true)
 
-  address String
-  zip     String
-  city    String
-  state   String
-  country String
+  address String @default("")
+  zip     String @default("")
+  city    String @default("")
+  state   String @default("")
+  country String @default("")
 
   phoneNumbers PhoneNumber[]
   properties   CustomerProperty[]
@@ -87,7 +87,7 @@ model Property {
   zip     String
   city    String
   state   String
-  country String @default("Brazil")
+  country String @default("")
 
   customers       CustomerProperty[]
   ownerProperties OwnerProperty[]

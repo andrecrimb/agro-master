@@ -48,6 +48,7 @@ router.patch(
   [
     param('ownerPropertyId').exists().toInt(),
     body('cnpj')
+      .if(body('cnpj').exists())
       .trim()
       .notEmpty()
       .withMessage('field_empty')
@@ -61,13 +62,13 @@ router.patch(
           })
       })
       .bail(),
-    body('name').trim().notEmpty(),
-    body('producerName').trim().notEmpty(),
-    body('ie').trim().notEmpty(),
-    body('address').trim().notEmpty(),
-    body('zip').trim().notEmpty(),
-    body('city').trim().notEmpty(),
-    body('state').trim().notEmpty()
+    body('name').if(body('name').exists()).trim().notEmpty(),
+    body('producerName').if(body('producerName').exists()).trim().notEmpty(),
+    body('ie').if(body('ie').exists()).trim().notEmpty(),
+    body('address').if(body('address').exists()).trim().notEmpty(),
+    body('zip').if(body('zip').exists()).trim().notEmpty(),
+    body('city').if(body('city').exists()).trim().notEmpty(),
+    body('state').if(body('state').exists()).trim().notEmpty()
   ],
   propertyController.editOwnerProperty
 )
