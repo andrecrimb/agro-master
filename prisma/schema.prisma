@@ -46,7 +46,7 @@ model Rootstock {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  name String
+  name String @unique
 
   rootstockOrderItems RootstockOrderItem[]
   seedlingBenches     SeedlingBench[]
