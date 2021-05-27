@@ -21,7 +21,6 @@ model User {
   email       String  @unique
   password    String  @db.VarChar(255)
   isSuperuser Boolean @default(false)
-  isEmployee  Boolean @default(false)
   active      Boolean @default(true)
 
   phoneNumbers    PhoneNumber[]

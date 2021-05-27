@@ -50,7 +50,6 @@ const getAuthUser: RequestHandler = async (req, res) => {
         nickname: true,
         email: true,
         isSuperuser: true,
-        isEmployee: true,
         active: true,
         phoneNumbers: { select: { id: true, label: true, number: true } }
       }

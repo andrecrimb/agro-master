@@ -61,7 +61,6 @@ const editUser: RequestHandler = async (req, res) => {
         nickname: true,
         email: true,
         isSuperuser: true,
-        isEmployee: true,
         active: true,
         phoneNumbers: { select: { id: true, label: true, number: true } }
       }
@@ -78,7 +77,7 @@ const getUsers: RequestHandler = async (req, res) => {
   try {
     const currentUser = res.locals.user as User
     const users = await prisma.user.findMany({
-      where: { id: { not: currentUser.id }, isEmployee: false },
+      where: { id: { not: currentUser.id } },
       select: {
         id: true,
         firstName: true,
@@ -86,7 +85,6 @@ const getUsers: RequestHandler = async (req, res) => {
         nickname: true,
         email: true,
         isSuperuser: true,
-        isEmployee: true,
         active: true,
         phoneNumbers: { select: { id: true, label: true, number: true } }
       }
@@ -109,7 +107,6 @@ const getUser: RequestHandler = async (req, res) => {
         nickname: true,
         email: true,
         isSuperuser: true,
-        isEmployee: true,
         active: true,
         phoneNumbers: { select: { id: true, label: true, number: true } }
       }
