@@ -1,16 +1,23 @@
 import express from 'express'
 import { body, param } from 'express-validator'
 import userController from '../controllers/user'
+import isAuthenticated from '../middleware/isAuthenticated'
 import isAuthSuperUser from '../middleware/isAuthSuperUser'
 import prisma from '../client'
-import property from '../controllers/property'
 
 const router = express.Router()
 
 router.get('/users', isAuthSuperUser, userController.getUsers)
 
+router.get(
+  '/users/:userId',
+  isAuthenticated,
+  [param('userId').exists().toInt()],
+  userController.getUser
+)
+
 router.post(
-  '/user',
+  '/users',
   isAuthSuperUser,
   [
     body('email')
@@ -29,7 +36,7 @@ router.post(
 )
 
 router.patch(
-  '/user/:userId',
+  '/users/:userId',
   isAuthSuperUser,
   [
     param('userId').exists().toInt(),

@@ -97,9 +97,9 @@ const getUsers: RequestHandler = async (req, res) => {
 
 const getUser: RequestHandler = async (req, res) => {
   try {
-    const currentUser = res.locals.user as User
+    const userId = req.params.userId as unknown as number
     const user = await prisma.user.findUnique({
-      where: { id: currentUser.id },
+      where: { id: userId },
       select: {
         id: true,
         firstName: true,
