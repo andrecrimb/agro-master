@@ -1,12 +1,20 @@
 import express from 'express'
 import propertyController from '../controllers/property'
 import isAuthSuperUser from '../middleware/isAuthSuperUser'
+import isAuthenticated from '../middleware/isAuthenticated'
 import { body, param } from 'express-validator'
 import prisma from '../client'
 
 const router = express.Router()
 
 router.get('/owner-properties', isAuthSuperUser, propertyController.getOwnerProperties)
+
+router.get(
+  '/owner-properties/:ownerPropertyId',
+  isAuthenticated,
+  param('ownerPropertyId').exists().toInt(),
+  propertyController.getOwnerProperty
+)
 
 router.delete(
   '/owner-properties/:ownerPropertyId',

@@ -47,6 +47,36 @@ const editOwnerProperty: RequestHandler = async (req, res) => {
   }
 }
 
+const getOwnerProperty: RequestHandler = async (req, res) => {
+  try {
+    const ownerPropertyId = req.params.ownerPropertyId as unknown as number
+    const properties = await prisma.ownerProperty.findUnique({
+      where: { id: ownerPropertyId },
+      select: {
+        id: true,
+        property: {
+          select: {
+            id: true,
+            producerName: true,
+            name: true,
+            cnpj: true,
+            cpf: true,
+            ie: true,
+            address: true,
+            zip: true,
+            city: true,
+            state: true,
+            country: true
+          }
+        }
+      }
+    })
+    return res.status(200).json(properties)
+  } catch (e) {
+    res.status(e.status || 500).json(e)
+  }
+}
+
 const getOwnerProperties: RequestHandler = async (req, res) => {
   try {
     const properties = await prisma.ownerProperty.findMany({
@@ -92,4 +122,10 @@ const deleteOwnerProperty: RequestHandler = async (req, res) => {
   }
 }
 
-export default { getOwnerProperties, deleteOwnerProperty, addNewOwnerProperty, editOwnerProperty }
+export default {
+  getOwnerProperties,
+  deleteOwnerProperty,
+  addNewOwnerProperty,
+  editOwnerProperty,
+  getOwnerProperty
+}
