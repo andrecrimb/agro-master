@@ -9,3 +9,4 @@ export type EditCustomerBody = Omit<Customer, CreationIgnoreKeys> & {
 }
 
 export type AddCustomerPropertyBody = Omit<Property, CreationIgnoreKeys>
+export type EditCustomerPropertyBody = Omit<Property, CreationIgnoreKeys>

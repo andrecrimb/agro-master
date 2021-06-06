@@ -68,4 +68,43 @@ router.post(
   customerController.addCustomerProperty
 )
 
+router.patch(
+  '/customers/:customerId/properties/:propertyId',
+  isAuthSuperUser,
+  [
+    param('customerId').exists().toInt(),
+    param('propertyId').exists().toInt(),
+    body('cnpj')
+      .if(body('cnpj').exists())
+      .trim()
+      .notEmpty()
+      .withMessage('field_empty')
+      .custom((value, { req }) => {
+        return prisma.customerProperty
+          .findFirst({ where: { property: { cnpj: value } } })
+          .then(property => {
+            if (property && property.propertyId !== +req.params?.propertyId) {
+              return Promise.reject('cnpj_duplicated')
+            }
+          })
+      })
+      .bail(),
+    body('name').if(body('name').exists()).trim().notEmpty(),
+    body('producerName').if(body('producerName').exists()).trim().notEmpty(),
+    body('ie').if(body('ie').exists()).trim().notEmpty(),
+    body('address').if(body('address').exists()).trim().notEmpty(),
+    body('zip').if(body('zip').exists()).trim().notEmpty(),
+    body('city').if(body('city').exists()).trim().notEmpty(),
+    body('state').if(body('state').exists()).trim().notEmpty()
+  ],
+  customerController.editCustomerProperty
+)
+
+router.delete(
+  '/customers/:customerId/properties/:propertyId',
+  isAuthSuperUser,
+  [param('customerId').exists().toInt(), param('propertyId').exists().toInt()],
+  customerController.deleteCustomerProperty
+)
+
 export default router

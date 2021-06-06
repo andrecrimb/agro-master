@@ -1,7 +1,12 @@
 import { RequestHandler } from 'express'
 import prisma from '../client'
 import { validationResult } from 'express-validator'
-import { AddCustomerBody, AddCustomerPropertyBody, EditCustomerBody } from '../types/customer'
+import {
+  AddCustomerBody,
+  AddCustomerPropertyBody,
+  EditCustomerBody,
+  EditCustomerPropertyBody
+} from '../types/customer'
 
 const addCustomer: RequestHandler = async (req, res) => {
   const errors = validationResult(req)
@@ -75,6 +80,7 @@ const getCustomer: RequestHandler = async (req, res) => {
         phoneNumbers: { select: { id: true, label: true, number: true } },
         properties: {
           select: {
+            customerId: true,
             property: {
               select: {
                 id: true,
@@ -162,11 +168,60 @@ const addCustomerProperty: RequestHandler = async (req, res) => {
   }
 }
 
+const editCustomerProperty: RequestHandler = async (req, res) => {
+  const params = req.params as unknown as { customerId: number; propertyId: number }
+  const errors = validationResult(req)
+
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() })
+  }
+
+  try {
+    const requestValues = req.body as EditCustomerPropertyBody
+
+    const property = await prisma.customerProperty.update({
+      where: {
+        customerId_propertyId: {
+          propertyId: params.propertyId,
+          customerId: params.customerId
+        }
+      },
+      data: { property: { update: requestValues } }
+    })
+
+    res.status(201).json(property)
+  } catch (e) {
+    console.log(e)
+    res.status(e.statusCode || 500).json(e)
+  }
+}
+
+const deleteCustomerProperty: RequestHandler = async (req, res) => {
+  const params = req.params as unknown as { propertyId: number; customerId: number }
+  const errors = validationResult(req)
+
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() })
+  }
+
+  try {
+    const property = await prisma.customerProperty.delete({
+      where: { customerId_propertyId: params }
+    })
+    res.status(201).json(property)
+  } catch (e) {
+    console.log(e)
+    res.status(e.statusCode || 500).json(e)
+  }
+}
+
 export default {
   addCustomer,
   editCustomer,
   getCustomers,
   deleteCustomer,
   getCustomer,
-  addCustomerProperty
+  addCustomerProperty,
+  editCustomerProperty,
+  deleteCustomerProperty
 }
