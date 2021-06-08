@@ -50,7 +50,7 @@ const editOwnerProperty: RequestHandler = async (req, res) => {
 const getOwnerProperty: RequestHandler = async (req, res) => {
   try {
     const ownerPropertyId = req.params.ownerPropertyId as unknown as number
-    const properties = await prisma.ownerProperty.findUnique({
+    const property = await prisma.ownerProperty.findUnique({
       where: { id: ownerPropertyId },
       select: {
         id: true,
@@ -71,7 +71,7 @@ const getOwnerProperty: RequestHandler = async (req, res) => {
         }
       }
     })
-    return res.status(200).json(properties)
+    return res.status(200).json(property)
   } catch (e) {
     res.status(e.status || 500).json(e)
   }
