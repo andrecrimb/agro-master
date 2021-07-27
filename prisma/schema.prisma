@@ -214,6 +214,7 @@ enum PaymentMethod {
 model FruitOrderItem {
   id Int @id @default(autoincrement())
 
+  name     String
   quantity Int
   boxPrice Float
 
