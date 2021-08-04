@@ -8,6 +8,7 @@ import customerRoutes from './routes/customer'
 import propertyRoutes from './routes/property'
 import greenhouseRoutes from './routes/greenhouse'
 import fruitsOrdersRoutes from './routes/fruitsOrders'
+import orderPaymentsRoutes from './routes/orderPayments'
 import bcrypt from 'bcryptjs'
 
 const PORT = process.env.PORT || 8080
@@ -28,6 +29,7 @@ app.use('/api', propertyRoutes)
 app.use('/api', customerRoutes)
 app.use('/api', greenhouseRoutes)
 app.use('/api', fruitsOrdersRoutes)
+app.use('/api', orderPaymentsRoutes)
 
 app.listen(PORT, async () => {
   console.log(`Running on ${PORT} ⚡`)

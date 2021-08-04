@@ -19,4 +19,12 @@ export type AddFruitsOrderBody = {
     boxPrice: number
   }[]
 }
+
+export type AddOrderPayment = {
+  amount: number
+  method: keyof typeof PaymentMethod
+  scheduledDate: Date
+  received: boolean
+}
+
 // export type AddFruitsOrderBody = Omit<Order, CreationIgnoreKeys> & {}

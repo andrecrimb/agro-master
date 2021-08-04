@@ -36,9 +36,18 @@ const getFruitsOrders: RequestHandler = async (req, res) => {
           }
         },
         payments: {
-          select: { id: true, amount: true, method: true, scheduledDate: true, received: true }
+          select: {
+            id: true,
+            orderId: true,
+            amount: true,
+            method: true,
+            scheduledDate: true,
+            received: true
+          }
         },
-        fruitOrderItems: { select: { id: true, name: true, quantity: true, boxPrice: true } }
+        fruitOrderItems: {
+          select: { id: true, orderId: true, name: true, quantity: true, boxPrice: true }
+        }
       }
     })
     return res.status(200).json(orders)
@@ -81,9 +90,18 @@ const getFruitsOrder: RequestHandler = async (req, res) => {
           }
         },
         payments: {
-          select: { id: true, amount: true, method: true, scheduledDate: true, received: true }
+          select: {
+            id: true,
+            orderId: true,
+            amount: true,
+            method: true,
+            scheduledDate: true,
+            received: true
+          }
         },
-        fruitOrderItems: { select: { id: true, name: true, quantity: true, boxPrice: true } }
+        fruitOrderItems: {
+          select: { id: true, orderId: true, name: true, quantity: true, boxPrice: true }
+        }
       }
     })
     return res.status(200).json(order)
@@ -93,7 +111,6 @@ const getFruitsOrder: RequestHandler = async (req, res) => {
 }
 
 const addFruitsOrder: RequestHandler = async (req, res) => {
-  console.log('entrou!')
   const errors = validationResult(req)
 
   if (!errors.isEmpty()) {
@@ -104,8 +121,6 @@ const addFruitsOrder: RequestHandler = async (req, res) => {
 
   try {
     const reqBody = req.body as AddFruitsOrderBody
-
-    console.log(reqBody)
 
     const customerProperty = await prisma.customerProperty.findFirst({
       where: { propertyId: reqBody.customerPropertyId }
