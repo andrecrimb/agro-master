@@ -14,6 +14,7 @@ const getFruitsOrders: RequestHandler = async (req, res) => {
         deliveryDate: true,
         nfNumber: true,
         installmentsNumber: true,
+        status: true,
         user: { select: { id: true, lastName: true, firstName: true } },
         customerProperty: {
           select: {
@@ -68,6 +69,7 @@ const getFruitsOrder: RequestHandler = async (req, res) => {
         deliveryDate: true,
         nfNumber: true,
         installmentsNumber: true,
+        status: true,
         user: { select: { id: true, lastName: true, firstName: true } },
         customerProperty: {
           select: {

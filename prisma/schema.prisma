@@ -15,9 +15,7 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  firstName   String
-  lastName    String  @default("")
-  nickname    String  @default("")
+  name        String
   email       String  @unique
   password    String  @db.VarChar(255)
   isSuperuser Boolean @default(false)
@@ -56,10 +54,9 @@ model Customer {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  firstName String
-  lastName  String
-  nickname  String  @default("")
-  active    Boolean @default(true)
+  name     String
+  nickname String  @default("")
+  active   Boolean @default(true)
 
   address String @default("")
   zip     String @default("")
@@ -162,10 +159,11 @@ model Order {
   updatedAt DateTime @updatedAt
 
   type               OrderType
+  status             OrderStatus @default(issued)
   orderDate          DateTime
   deliveryDate       DateTime
   nfNumber           String
-  installmentsNumber Int       @default(1)
+  installmentsNumber Int         @default(1)
 
   // Who registered the order
   user   User @relation(fields: [userId], references: [id])
@@ -190,6 +188,11 @@ enum OrderType {
   rootstock
   borbulha
   fruit
+}
+
+enum OrderStatus {
+  canceled
+  issued
 }
 
 model OrderPayment {
