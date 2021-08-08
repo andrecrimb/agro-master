@@ -29,7 +29,7 @@ router.post(
       })
       .bail()
       .normalizeEmail(),
-    body('firstName').trim().notEmpty().withMessage('field_empty'),
+    body('name').trim().notEmpty().withMessage('field_empty'),
     body('password').trim().isLength({ min: 5 }).withMessage('short_password')
   ],
   userController.addNewUser
@@ -40,7 +40,7 @@ router.patch(
   isAuthSuperUser,
   [
     param('userId').exists().toInt(),
-    body('firstName').if(body('firstName').exists()).trim().notEmpty().withMessage('field_empty'),
+    body('name').if(body('name').exists()).trim().notEmpty().withMessage('field_empty'),
     body('password')
       .if(body('password').exists())
       .trim()

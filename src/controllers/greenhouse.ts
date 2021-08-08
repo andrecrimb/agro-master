@@ -43,7 +43,7 @@ const getGreenhouse: RequestHandler = async (req, res) => {
             lastPlantingDate: true,
             firstPaymentDate: true,
             rootstock: { select: { name: true, id: true } },
-            user: { select: { firstName: true, lastName: true, id: true } },
+            user: { select: { name: true, id: true } },
             greenhouseId: true
           }
         }

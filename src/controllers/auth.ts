@@ -45,9 +45,7 @@ const getAuthUser: RequestHandler = async (req, res) => {
       where: { id: currentUser.id },
       select: {
         id: true,
-        firstName: true,
-        lastName: true,
-        nickname: true,
+        name: true,
         email: true,
         isSuperuser: true,
         active: true,

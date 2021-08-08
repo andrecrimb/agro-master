@@ -40,7 +40,7 @@ app.listen(PORT, async () => {
     const hashedPw = await bcrypt.hash(process.env.ROOT_PASS + '', 12)
     return await prisma.user.create({
       data: {
-        firstName: 'root',
+        name: 'root',
         email: process.env.ROOT_EMAIL + '',
         password: hashedPw,
         isSuperuser: true

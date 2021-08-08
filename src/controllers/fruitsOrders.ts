@@ -15,10 +15,10 @@ const getFruitsOrders: RequestHandler = async (req, res) => {
         nfNumber: true,
         installmentsNumber: true,
         status: true,
-        user: { select: { id: true, lastName: true, firstName: true } },
+        user: { select: { id: true, name: true } },
         customerProperty: {
           select: {
-            customer: { select: { id: true, lastName: true, firstName: true, nickname: true } },
+            customer: { select: { id: true, name: true, nickname: true } },
             property: {
               select: {
                 id: true,
@@ -70,10 +70,10 @@ const getFruitsOrder: RequestHandler = async (req, res) => {
         nfNumber: true,
         installmentsNumber: true,
         status: true,
-        user: { select: { id: true, lastName: true, firstName: true } },
+        user: { select: { id: true, name: true } },
         customerProperty: {
           select: {
-            customer: { select: { id: true, lastName: true, firstName: true, nickname: true } },
+            customer: { select: { id: true, name: true, nickname: true } },
             property: {
               select: {
                 id: true,

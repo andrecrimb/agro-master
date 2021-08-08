@@ -56,9 +56,7 @@ const editUser: RequestHandler = async (req, res) => {
       data: toUpdate,
       select: {
         id: true,
-        firstName: true,
-        lastName: true,
-        nickname: true,
+        name: true,
         email: true,
         isSuperuser: true,
         active: true,
@@ -80,9 +78,7 @@ const getUsers: RequestHandler = async (req, res) => {
       where: { id: { not: currentUser.id } },
       select: {
         id: true,
-        firstName: true,
-        lastName: true,
-        nickname: true,
+        name: true,
         email: true,
         isSuperuser: true,
         active: true,
@@ -102,9 +98,7 @@ const getUser: RequestHandler = async (req, res) => {
       where: { id: userId },
       select: {
         id: true,
-        firstName: true,
-        lastName: true,
-        nickname: true,
+        name: true,
         email: true,
         isSuperuser: true,
         active: true,

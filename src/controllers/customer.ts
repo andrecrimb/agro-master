@@ -69,8 +69,7 @@ const getCustomer: RequestHandler = async (req, res) => {
       where: { id: customerId },
       select: {
         id: true,
-        firstName: true,
-        lastName: true,
+        name: true,
         nickname: true,
         active: true,
         address: true,
@@ -111,8 +110,7 @@ const getCustomers: RequestHandler = async (req, res) => {
     const customers = await prisma.customer.findMany({
       select: {
         id: true,
-        firstName: true,
-        lastName: true,
+        name: true,
         nickname: true,
         active: true,
         address: true,
