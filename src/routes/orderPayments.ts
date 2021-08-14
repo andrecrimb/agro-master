@@ -11,15 +11,12 @@ router.post(
   isAuthSuperUser,
   [
     param('orderId').exists().toInt(),
-    body('amount').exists().toInt(),
-    body('method')
-      .notEmpty()
-      .custom(value => Object.values(PaymentMethod).includes(value))
-      .withMessage('invalid_payment_method'),
-    body('scheduledDate').trim().notEmpty().toDate(),
-    body('received').exists().isBoolean()
+    body('*.amount').exists().toInt(),
+    body('*.method').isIn(Object.values(PaymentMethod)).withMessage('invalid_payment_method'),
+    body('*.scheduledDate').trim().notEmpty().toDate(),
+    body('*.received').exists().isBoolean()
   ],
-  orderPayments.addOrderPayment
+  orderPayments.addOrderPayments
 )
 
 router.patch(
@@ -29,10 +26,7 @@ router.patch(
     param('orderId').exists().toInt(),
     param('paymentId').exists().toInt(),
     body('amount').exists().toInt(),
-    body('method')
-      .notEmpty()
-      .custom(value => Object.values(PaymentMethod).includes(value))
-      .withMessage('invalid_payment_method'),
+    body('method').isIn(Object.values(PaymentMethod)).withMessage('invalid_payment_method'),
     body('scheduledDate').trim().notEmpty().toDate(),
     body('received').exists().isBoolean()
   ],

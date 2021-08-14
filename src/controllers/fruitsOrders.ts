@@ -1,153 +1,71 @@
-import { User } from '@prisma/client'
 import { RequestHandler } from 'express'
 import { validationResult } from 'express-validator'
 import prisma from '../client'
-import { AddFruitsOrderBody } from '../types/order'
+import { AddFruitOrderItem } from '../types/order'
 
-const getFruitsOrders: RequestHandler = async (req, res) => {
-  try {
-    const orders = await prisma.order.findMany({
-      select: {
-        id: true,
-        type: true,
-        orderDate: true,
-        deliveryDate: true,
-        nfNumber: true,
-        installmentsNumber: true,
-        status: true,
-        user: { select: { id: true, name: true } },
-        customerProperty: {
-          select: {
-            customer: { select: { id: true, name: true, nickname: true } },
-            property: {
-              select: {
-                id: true,
-                producerName: true,
-                name: true,
-                cnpj: true,
-                cpf: true,
-                ie: true,
-                address: true,
-                zip: true,
-                city: true,
-                state: true,
-                country: true
-              }
-            }
-          }
-        },
-        payments: {
-          select: {
-            id: true,
-            orderId: true,
-            amount: true,
-            method: true,
-            scheduledDate: true,
-            received: true
-          }
-        },
-        fruitOrderItems: {
-          select: { id: true, orderId: true, name: true, quantity: true, boxPrice: true }
-        }
-      }
-    })
-    return res.status(200).json(orders)
-  } catch (e) {
-    res.status(e.status || 500).json(e)
-  }
-}
-
-const getFruitsOrder: RequestHandler = async (req, res) => {
-  try {
-    const orderId = req.params.orderId as unknown as number
-    const order = await prisma.order.findUnique({
-      where: { id: orderId },
-      select: {
-        id: true,
-        type: true,
-        orderDate: true,
-        deliveryDate: true,
-        nfNumber: true,
-        installmentsNumber: true,
-        status: true,
-        user: { select: { id: true, name: true } },
-        customerProperty: {
-          select: {
-            customer: { select: { id: true, name: true, nickname: true } },
-            property: {
-              select: {
-                id: true,
-                producerName: true,
-                name: true,
-                cnpj: true,
-                cpf: true,
-                ie: true,
-                address: true,
-                zip: true,
-                city: true,
-                state: true,
-                country: true
-              }
-            }
-          }
-        },
-        payments: {
-          select: {
-            id: true,
-            orderId: true,
-            amount: true,
-            method: true,
-            scheduledDate: true,
-            received: true
-          }
-        },
-        fruitOrderItems: {
-          select: { id: true, orderId: true, name: true, quantity: true, boxPrice: true }
-        }
-      }
-    })
-    return res.status(200).json(order)
-  } catch (e) {
-    res.status(e.status || 500).json(e)
-  }
-}
-
-const addFruitsOrder: RequestHandler = async (req, res) => {
+const addFruitOrderItems: RequestHandler = async (req, res) => {
   const errors = validationResult(req)
 
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() })
   }
 
-  const user = res.locals.user as User
+  const orderId = req.params.orderId as unknown as number
 
   try {
-    const reqBody = req.body as AddFruitsOrderBody
-
-    const customerProperty = await prisma.customerProperty.findFirst({
-      where: { propertyId: reqBody.customerPropertyId }
-    })
-
-    const order = await prisma.order.create({
+    const order = await prisma.order.update({
+      where: { id: orderId },
       data: {
-        type: reqBody.type,
-        orderDate: reqBody.orderDate,
-        deliveryDate: reqBody.deliveryDate,
-        nfNumber: reqBody.nfNumber,
-        installmentsNumber: reqBody.installmentsNumber,
-        userId: user.id,
-        customerId: customerProperty!.customerId,
-        customerPropertyId: reqBody.customerPropertyId,
-        payments: { createMany: { data: reqBody.payments } },
-        fruitOrderItems: { createMany: { data: reqBody.fruitOrderItems } }
+        fruitOrderItems: { createMany: { data: req.body as AddFruitOrderItem[] } }
       }
     })
-
     res.status(201).json(order)
   } catch (e) {
-    console.error(e)
-    res.status(e.status || 500).json(e)
+    console.log(e)
+    res.status(e.statusCode || 500).json(e)
   }
 }
 
-export default { getFruitsOrders, getFruitsOrder, addFruitsOrder }
+const editFruitOrderItems: RequestHandler = async (req, res) => {
+  const errors = validationResult(req)
+
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() })
+  }
+
+  const orderId = req.params.orderId as unknown as number
+  const fruitOrderItemId = req.params.fruitOrderItemId as unknown as number
+
+  try {
+    const fruitOrderItem = await prisma.fruitOrderItem.update({
+      where: { id: fruitOrderItemId },
+      data: { orderId, ...(req.body as AddFruitOrderItem) }
+    })
+    res.status(201).json(fruitOrderItem)
+  } catch (e) {
+    console.log(e)
+    res.status(e.statusCode || 500).json(e)
+  }
+}
+
+const deleteFruitOrderItems: RequestHandler = async (req, res) => {
+  const errors = validationResult(req)
+
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() })
+  }
+
+  const fruitOrderItemId = req.params.fruitOrderItemId as unknown as number
+
+  try {
+    const fruitOrderItem = await prisma.fruitOrderItem.delete({
+      where: { id: fruitOrderItemId }
+    })
+    res.status(200).json(fruitOrderItem)
+  } catch (e) {
+    console.log(e)
+    res.status(e.statusCode || 500).json(e)
+  }
+}
+
+export default { addFruitOrderItems, deleteFruitOrderItems, editFruitOrderItems }

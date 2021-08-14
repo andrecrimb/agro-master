@@ -3,7 +3,7 @@ import { validationResult } from 'express-validator'
 import prisma from '../client'
 import { AddOrderPayment } from '../types/order'
 
-const addOrderPayment: RequestHandler = async (req, res) => {
+const addOrderPayments: RequestHandler = async (req, res) => {
   const errors = validationResult(req)
 
   if (!errors.isEmpty()) {
@@ -13,13 +13,13 @@ const addOrderPayment: RequestHandler = async (req, res) => {
   const orderId = req.params.orderId as unknown as number
 
   try {
-    const payment = await prisma.order.update({
+    const order = await prisma.order.update({
       where: { id: orderId },
       data: {
-        payments: { create: req.body as AddOrderPayment }
+        payments: { createMany: { data: req.body as AddOrderPayment[] } }
       }
     })
-    res.status(201).json(payment)
+    res.status(201).json(order)
   } catch (e) {
     console.log(e)
     res.status(e.statusCode || 500).json(e)
@@ -61,11 +61,11 @@ const deleteOrderPayment: RequestHandler = async (req, res) => {
     const payment = await prisma.orderPayment.delete({
       where: { id: paymentId }
     })
-    res.status(201).json(payment)
+    res.status(200).json(payment)
   } catch (e) {
     console.log(e)
     res.status(e.statusCode || 500).json(e)
   }
 }
 
-export default { addOrderPayment, editOrderPayment, deleteOrderPayment }
+export default { addOrderPayments, editOrderPayment, deleteOrderPayment }

@@ -158,12 +158,11 @@ model Order {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  type               OrderType
-  status             OrderStatus @default(issued)
-  orderDate          DateTime
-  deliveryDate       DateTime
-  nfNumber           String
-  installmentsNumber Int         @default(1)
+  type         OrderType
+  status       OrderStatus @default(issued)
+  orderDate    DateTime
+  deliveryDate DateTime
+  nfNumber     String
 
   // Who registered the order
   user   User @relation(fields: [userId], references: [id])
