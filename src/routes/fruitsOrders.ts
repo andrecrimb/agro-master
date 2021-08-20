@@ -17,19 +17,6 @@ router.post(
   fruitsOrders.addOrderItems
 )
 
-router.put(
-  '/orders/:orderId/fruitOrderItems/:fruitOrderItemId',
-  isAuthSuperUser,
-  [
-    param('orderId').exists().toInt(),
-    param('fruitOrderItemId').exists().toInt(),
-    body('name').trim().notEmpty(),
-    body('quantity').exists().toInt(),
-    body('boxPrice').exists().toFloat()
-  ],
-  fruitsOrders.editOrderItems
-)
-
 router.delete(
   '/orders/:orderId/fruitOrderItems/:fruitOrderItemId',
   isAuthSuperUser,

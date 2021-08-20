@@ -17,19 +17,6 @@ router.post(
   borbulhasOrders.addOrderItems
 )
 
-router.put(
-  '/orders/:orderId/borbulhasOrderItems/:orderItemId',
-  isAuthSuperUser,
-  [
-    param('orderId').exists().toInt(),
-    param('orderItemId').exists().toInt(),
-    body('name').trim().notEmpty(),
-    body('quantity').exists().toInt(),
-    body('unityPrice').exists().toFloat()
-  ],
-  borbulhasOrders.editOrderItems
-)
-
 router.delete(
   '/orders/:orderId/borbulhasOrderItems/:orderItemId',
   isAuthSuperUser,

@@ -17,19 +17,6 @@ router.post(
   rootstocksOrders.addOrderItems
 )
 
-router.put(
-  '/orders/:orderId/rootstocksOrderItems/:orderItemId',
-  isAuthSuperUser,
-  [
-    param('orderId').exists().toInt(),
-    param('orderItemId').exists().toInt(),
-    body('rootstockId').exists().notEmpty().toInt(),
-    body('quantity').exists().toInt(),
-    body('unityPrice').exists().toFloat()
-  ],
-  rootstocksOrders.editOrderItems
-)
-
 router.delete(
   '/orders/:orderId/rootstocksOrderItems/:orderItemId',
   isAuthSuperUser,

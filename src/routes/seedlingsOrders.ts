@@ -17,19 +17,6 @@ router.post(
   seedlingsOrders.addOrderItems
 )
 
-router.put(
-  '/orders/:orderId/seedlingsOrderItems/:orderItemId',
-  isAuthSuperUser,
-  [
-    param('orderId').exists().toInt(),
-    param('orderItemId').exists().toInt(),
-    body('seedlingBenchId').exists().notEmpty().toInt(),
-    body('quantity').exists().toInt(),
-    body('unityPrice').exists().toFloat()
-  ],
-  seedlingsOrders.editOrderItems
-)
-
 router.delete(
   '/orders/:orderId/seedlingsOrderItems/:orderItemId',
   isAuthSuperUser,

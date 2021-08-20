@@ -58,6 +58,7 @@ const getOrders: RequestHandler = async (req, res) => {
           select: {
             id: true,
             orderId: true,
+            rootstockId: true,
             rootstock: { select: { name: true } },
             quantity: true,
             unityPrice: true
@@ -156,6 +157,7 @@ const getOrder: RequestHandler = async (req, res) => {
           select: {
             id: true,
             orderId: true,
+            rootstockId: true,
             rootstock: { select: { name: true } },
             quantity: true,
             unityPrice: true
@@ -168,6 +170,7 @@ const getOrder: RequestHandler = async (req, res) => {
             name: true,
             quantity: true,
             unityPrice: true,
+            greenhouseId: true,
             greenhouse: {
               select: {
                 label: true,

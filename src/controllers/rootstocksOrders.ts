@@ -26,28 +26,6 @@ const addOrderItems: RequestHandler = async (req, res) => {
   }
 }
 
-const editOrderItems: RequestHandler = async (req, res) => {
-  const errors = validationResult(req)
-
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() })
-  }
-
-  const orderId = req.params.orderId as unknown as number
-  const orderItemId = req.params.orderItemId as unknown as number
-
-  try {
-    const orderItem = await prisma.rootstockOrderItem.update({
-      where: { id: orderItemId },
-      data: { orderId, ...(req.body as AddRootstockOrderItem) }
-    })
-    res.status(201).json(orderItem)
-  } catch (e) {
-    console.log(e)
-    res.status(e.statusCode || 500).json(e)
-  }
-}
-
 const deleteOrderItems: RequestHandler = async (req, res) => {
   const errors = validationResult(req)
 
@@ -68,4 +46,4 @@ const deleteOrderItems: RequestHandler = async (req, res) => {
   }
 }
 
-export default { addOrderItems, deleteOrderItems, editOrderItems }
+export default { addOrderItems, deleteOrderItems }
