@@ -15,7 +15,20 @@ const getGreenhouses: RequestHandler = async (req, res) => {
         id: true,
         label: true,
         type: true,
-        ownerProperty: { select: { property: { select: { name: true } } } }
+        ownerProperty: { select: { property: { select: { id: true, name: true } } } },
+        seedlingBenches: {
+          select: {
+            id: true,
+            updatedAt: true,
+            label: true,
+            quantity: true,
+            lastPlantingDate: true,
+            firstPaymentDate: true,
+            rootstock: { select: { name: true, id: true } },
+            user: { select: { name: true, id: true } },
+            greenhouseId: true
+          }
+        }
       }
     })
     return res.status(200).json(greenhouses)

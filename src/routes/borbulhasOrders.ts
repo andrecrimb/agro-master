@@ -1,40 +1,40 @@
 import express from 'express'
 import isAuthSuperUser from '../middleware/isAuthSuperUser'
-import fruitsOrders from '../controllers/fruitsOrders'
+import borbulhasOrders from '../controllers/borbulhasOrders'
 import { body, param } from 'express-validator'
 
 const router = express.Router()
 
 router.post(
-  '/orders/:orderId/fruitOrderItems',
+  '/orders/:orderId/borbulhasOrderItems',
   isAuthSuperUser,
   [
     param('orderId').exists().toInt(),
     body('*.name').trim().notEmpty(),
     body('*.quantity').exists().toInt(),
-    body('*.boxPrice').exists().toFloat()
+    body('*.unityPrice').exists().toFloat()
   ],
-  fruitsOrders.addOrderItems
+  borbulhasOrders.addOrderItems
 )
 
 router.put(
-  '/orders/:orderId/fruitOrderItems/:fruitOrderItemId',
+  '/orders/:orderId/borbulhasOrderItems/:orderItemId',
   isAuthSuperUser,
   [
     param('orderId').exists().toInt(),
-    param('fruitOrderItemId').exists().toInt(),
+    param('orderItemId').exists().toInt(),
     body('name').trim().notEmpty(),
     body('quantity').exists().toInt(),
-    body('boxPrice').exists().toFloat()
+    body('unityPrice').exists().toFloat()
   ],
-  fruitsOrders.editOrderItems
+  borbulhasOrders.editOrderItems
 )
 
 router.delete(
-  '/orders/:orderId/fruitOrderItems/:fruitOrderItemId',
+  '/orders/:orderId/borbulhasOrderItems/:orderItemId',
   isAuthSuperUser,
-  [param('orderId').exists().toInt(), param('fruitOrderItemId').exists().toInt()],
-  fruitsOrders.deleteOrderItems
+  [param('orderId').exists().toInt(), param('orderItemId').exists().toInt()],
+  borbulhasOrders.deleteOrderItems
 )
 
 export default router

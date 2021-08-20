@@ -7,8 +7,12 @@ import rootstockRoutes from './routes/rootstock'
 import customerRoutes from './routes/customer'
 import propertyRoutes from './routes/property'
 import greenhouseRoutes from './routes/greenhouse'
+import rootstocksOrdersRoutes from './routes/rootstocksOrders'
+import seedsOrdersRoutes from './routes/seedsOrders'
 import fruitsOrdersRoutes from './routes/fruitsOrders'
 import orderPaymentsRoutes from './routes/orderPayments'
+import borbulhasOrdersRoutes from './routes/borbulhasOrders'
+import seedlingsOrdersRoutes from './routes/seedlingsOrders'
 import ordersRoutes from './routes/orders'
 import bcrypt from 'bcryptjs'
 
@@ -29,8 +33,14 @@ app.use('/api', rootstockRoutes)
 app.use('/api', propertyRoutes)
 app.use('/api', customerRoutes)
 app.use('/api', greenhouseRoutes)
-app.use('/api', ordersRoutes)
+
 app.use('/api', fruitsOrdersRoutes)
+app.use('/api', rootstocksOrdersRoutes)
+app.use('/api', seedsOrdersRoutes)
+app.use('/api', borbulhasOrdersRoutes)
+app.use('/api', seedlingsOrdersRoutes)
+
+app.use('/api', ordersRoutes)
 app.use('/api', orderPaymentsRoutes)
 
 app.listen(PORT, async () => {

@@ -1,7 +1,7 @@
 import { RequestHandler } from 'express'
 import { validationResult } from 'express-validator'
 import prisma from '../client'
-import { AddFruitOrderItem } from '../types/order'
+import { AddSeedlingOrderItem } from '../types/order'
 
 const addOrderItems: RequestHandler = async (req, res) => {
   const errors = validationResult(req)
@@ -16,9 +16,12 @@ const addOrderItems: RequestHandler = async (req, res) => {
     const order = await prisma.order.update({
       where: { id: orderId },
       data: {
-        fruitOrderItems: { createMany: { data: req.body as AddFruitOrderItem[] } }
+        seedlingBenchOrderItems: { createMany: { data: req.body as AddSeedlingOrderItem[] } }
       }
     })
+
+    //TODO add logic to discount benches values
+
     res.status(201).json(order)
   } catch (e) {
     console.log(e)
@@ -34,12 +37,12 @@ const editOrderItems: RequestHandler = async (req, res) => {
   }
 
   const orderId = req.params.orderId as unknown as number
-  const orderItemId = req.params.fruitOrderItemId as unknown as number
+  const orderItemId = req.params.orderItemId as unknown as number
 
   try {
-    const orderItem = await prisma.fruitOrderItem.update({
+    const orderItem = await prisma.seedlingBenchOrderItem.update({
       where: { id: orderItemId },
-      data: { orderId, ...(req.body as AddFruitOrderItem) }
+      data: { orderId, ...(req.body as AddSeedlingOrderItem) }
     })
     res.status(201).json(orderItem)
   } catch (e) {
@@ -50,17 +53,17 @@ const editOrderItems: RequestHandler = async (req, res) => {
 
 const deleteOrderItems: RequestHandler = async (req, res) => {
   const errors = validationResult(req)
-
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() })
   }
-
-  const orderItemId = req.params.fruitOrderItemId as unknown as number
-
+  const orderItemId = req.params.orderItemId as unknown as number
   try {
-    const orderItem = await prisma.fruitOrderItem.delete({
+    const orderItem = await prisma.seedlingBenchOrderItem.delete({
       where: { id: orderItemId }
     })
+
+    //TODO add logic to put benches values back
+
     res.status(200).json(orderItem)
   } catch (e) {
     console.log(e)

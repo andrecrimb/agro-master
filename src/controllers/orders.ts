@@ -64,12 +64,26 @@ const getOrders: RequestHandler = async (req, res) => {
           }
         },
         borbulhaOrderItems: {
-          select: { id: true, orderId: true, name: true, quantity: true, unityPrice: true }
+          select: {
+            id: true,
+            orderId: true,
+            name: true,
+            quantity: true,
+            unityPrice: true,
+            greenhouseId: true,
+            greenhouse: {
+              select: {
+                label: true,
+                ownerProperty: { select: { property: { select: { name: true } } } }
+              }
+            }
+          }
         },
         seedlingBenchOrderItems: {
           select: {
             id: true,
             orderId: true,
+            seedlingBenchId: true,
             seedlingBench: {
               select: {
                 label: true,
@@ -148,7 +162,19 @@ const getOrder: RequestHandler = async (req, res) => {
           }
         },
         borbulhaOrderItems: {
-          select: { id: true, orderId: true, name: true, quantity: true, unityPrice: true }
+          select: {
+            id: true,
+            orderId: true,
+            name: true,
+            quantity: true,
+            unityPrice: true,
+            greenhouse: {
+              select: {
+                label: true,
+                ownerProperty: { select: { property: { select: { name: true } } } }
+              }
+            }
+          }
         },
         seedlingBenchOrderItems: {
           select: {

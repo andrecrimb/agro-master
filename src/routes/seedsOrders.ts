@@ -1,40 +1,40 @@
 import express from 'express'
 import isAuthSuperUser from '../middleware/isAuthSuperUser'
-import fruitsOrders from '../controllers/fruitsOrders'
+import seedsOrders from '../controllers/seedsOrders'
 import { body, param } from 'express-validator'
 
 const router = express.Router()
 
 router.post(
-  '/orders/:orderId/fruitOrderItems',
+  '/orders/:orderId/seedsOrderItems',
   isAuthSuperUser,
   [
     param('orderId').exists().toInt(),
     body('*.name').trim().notEmpty(),
     body('*.quantity').exists().toInt(),
-    body('*.boxPrice').exists().toFloat()
+    body('*.kgPrice').exists().toFloat()
   ],
-  fruitsOrders.addOrderItems
+  seedsOrders.addOrderItems
 )
 
 router.put(
-  '/orders/:orderId/fruitOrderItems/:fruitOrderItemId',
+  '/orders/:orderId/seedsOrderItems/:orderItemId',
   isAuthSuperUser,
   [
     param('orderId').exists().toInt(),
-    param('fruitOrderItemId').exists().toInt(),
+    param('orderItemId').exists().toInt(),
     body('name').trim().notEmpty(),
     body('quantity').exists().toInt(),
-    body('boxPrice').exists().toFloat()
+    body('kgPrice').exists().toFloat()
   ],
-  fruitsOrders.editOrderItems
+  seedsOrders.editOrderItems
 )
 
 router.delete(
-  '/orders/:orderId/fruitOrderItems/:fruitOrderItemId',
+  '/orders/:orderId/seedsOrderItems/:orderItemId',
   isAuthSuperUser,
-  [param('orderId').exists().toInt(), param('fruitOrderItemId').exists().toInt()],
-  fruitsOrders.deleteOrderItems
+  [param('orderId').exists().toInt(), param('orderItemId').exists().toInt()],
+  seedsOrders.deleteOrderItems
 )
 
 export default router
