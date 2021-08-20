@@ -1,12 +1,7 @@
 import { RequestHandler } from 'express'
 import prisma from '../client'
 import { validationResult } from 'express-validator'
-import {
-  AddBenchBody,
-  AddGreenhouseBody,
-  EditBenchBody,
-  EditGreenhouseBody
-} from '../types/greenhouse'
+import { AddBenchBody, AddGreenhouseBody, EditGreenhouseBody } from '../types/greenhouse'
 
 const getGreenhouses: RequestHandler = async (req, res) => {
   try {
