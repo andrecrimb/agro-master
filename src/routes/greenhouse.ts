@@ -78,10 +78,12 @@ router.post(
     body('label')
       .trim()
       .notEmpty()
-      .custom(value => {
-        return prisma.seedlingBench.findFirst({ where: { label: value } }).then(bench => {
-          if (bench) return Promise.reject('bench_duplicated')
-        })
+      .custom((value, { req }) => {
+        return prisma.seedlingBench
+          .findFirst({ where: { label: value, greenhouseId: +`${req.params?.greenhouseId}` } })
+          .then(bench => {
+            if (bench) return Promise.reject('bench_duplicated')
+          })
       }),
     body('quantity').trim().toFloat().isFloat({ min: 1 }),
     body('lastPlantingDate').trim().notEmpty().toDate(),
@@ -125,11 +127,13 @@ router.put(
       .trim()
       .notEmpty()
       .custom((value, { req }) => {
-        return prisma.seedlingBench.findFirst({ where: { label: value } }).then(bench => {
-          if (bench && bench.id !== +req.params?.benchId) {
-            return Promise.reject('bench_duplicated')
-          }
-        })
+        return prisma.seedlingBench
+          .findFirst({ where: { label: value, greenhouseId: +`${req.params?.greenhouseId}` } })
+          .then(bench => {
+            if (bench && bench.id !== +req.params?.benchId) {
+              return Promise.reject('bench_duplicated')
+            }
+          })
       }),
     body('quantity').toInt().isInt({ min: 1 }),
     body('lastPlantingDate').trim().notEmpty().toDate(),
