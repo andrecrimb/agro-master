@@ -19,8 +19,19 @@ router.post(
   '/greenhouses',
   isAuthSuperUser,
   [
-    body('label').trim().notEmpty(),
     body('type').trim().notEmpty(),
+    body('label')
+      .trim()
+      .notEmpty()
+      .custom((val, { req }) => {
+        return prisma.greenhouse
+          .findFirst({
+            where: { label: val, ownerPropertyId: req.body.ownerPropertyId }
+          })
+          .then(gh => {
+            if (gh) return Promise.reject('greenhouse_already_exists')
+          })
+      }),
     body('ownerPropertyId')
       .trim()
       .notEmpty()

@@ -123,6 +123,8 @@ model Greenhouse {
 
   borbulhaOrderItems BorbulhaOrderItem[]
   seedlingBenches    SeedlingBench[]
+
+  @@unique(fields: [label, ownerPropertyId], name: "labelProperty")
 }
 
 enum GreenhouseType {
