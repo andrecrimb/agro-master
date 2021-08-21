@@ -153,6 +153,8 @@ model SeedlingBench {
   userId Int
 
   seedlingBenchOrderItems SeedlingBenchOrderItem[]
+
+  @@unique(fields: [label, greenhouseId], name: "labelGreenhouse")
 }
 
 model Order {
