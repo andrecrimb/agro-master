@@ -137,7 +137,7 @@ model SeedlingBench {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  label            String   @unique
+  label            String
   quantity         Int
   lastPlantingDate DateTime
   firstPaymentDate DateTime
