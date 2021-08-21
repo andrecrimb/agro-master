@@ -89,7 +89,7 @@ const getOrders: RequestHandler = async (req, res) => {
               select: {
                 label: true,
                 rootstock: { select: { name: true } },
-                greenhouse: { select: { label: true } }
+                greenhouse: { select: { label: true, ownerPropertyId: true } }
               }
             },
             quantity: true,
@@ -183,11 +183,12 @@ const getOrder: RequestHandler = async (req, res) => {
           select: {
             id: true,
             orderId: true,
+            seedlingBenchId: true,
             seedlingBench: {
               select: {
                 label: true,
                 rootstock: { select: { name: true } },
-                greenhouse: { select: { label: true } }
+                greenhouse: { select: { label: true, ownerPropertyId: true } }
               }
             },
             quantity: true,
