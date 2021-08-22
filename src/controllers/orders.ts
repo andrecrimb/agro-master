@@ -1,8 +1,96 @@
-import { OrderType, User } from '@prisma/client'
+import { OrderType, Prisma, User } from '@prisma/client'
 import { RequestHandler } from 'express'
 import { validationResult } from 'express-validator'
 import prisma from '../client'
 import { OrderRequest } from '../types/order'
+
+const orderSelect: Prisma.OrderSelect = {
+  id: true,
+  type: true,
+  orderDate: true,
+  deliveryDate: true,
+  nfNumber: true,
+  status: true,
+  user: { select: { id: true, name: true } },
+  customerProperty: {
+    select: {
+      customer: { select: { id: true, name: true, nickname: true } },
+      property: {
+        select: {
+          id: true,
+          producerName: true,
+          name: true,
+          cnpj: true,
+          cpf: true,
+          ie: true,
+          address: true,
+          zip: true,
+          city: true,
+          state: true,
+          country: true
+        }
+      }
+    }
+  },
+  payments: {
+    select: {
+      id: true,
+      orderId: true,
+      amount: true,
+      method: true,
+      scheduledDate: true,
+      received: true
+    }
+  },
+  fruitOrderItems: {
+    select: { id: true, orderId: true, name: true, quantity: true, boxPrice: true }
+  },
+  seedOrderItems: {
+    select: { id: true, orderId: true, name: true, quantity: true, kgPrice: true }
+  },
+  rootstockOrderItems: {
+    select: {
+      id: true,
+      orderId: true,
+      rootstockId: true,
+      rootstock: { select: { name: true } },
+      quantity: true,
+      unityPrice: true
+    }
+  },
+  borbulhaOrderItems: {
+    select: {
+      id: true,
+      orderId: true,
+      name: true,
+      quantity: true,
+      unityPrice: true,
+      greenhouseId: true,
+      greenhouse: {
+        select: {
+          label: true,
+          ownerProperty: { select: { property: { select: { name: true } } } }
+        }
+      }
+    }
+  },
+  seedlingBenchOrderItems: {
+    select: {
+      id: true,
+      orderId: true,
+      seedlingBenchId: true,
+      seedlingBench: {
+        select: {
+          label: true,
+          rootstock: { select: { name: true } },
+          greenhouse: { select: { label: true, ownerPropertyId: true } }
+        }
+      },
+      quantity: true,
+      unityPrice: true
+    }
+  }
+}
 
 const getOrders: RequestHandler = async (req, res) => {
   try {
@@ -10,93 +98,7 @@ const getOrders: RequestHandler = async (req, res) => {
 
     const orders = await prisma.order.findMany({
       where: orderType !== undefined ? { type: orderType } : {},
-      select: {
-        id: true,
-        type: true,
-        orderDate: true,
-        deliveryDate: true,
-        nfNumber: true,
-        status: true,
-        user: { select: { id: true, name: true } },
-        customerProperty: {
-          select: {
-            customer: { select: { id: true, name: true, nickname: true } },
-            property: {
-              select: {
-                id: true,
-                producerName: true,
-                name: true,
-                cnpj: true,
-                cpf: true,
-                ie: true,
-                address: true,
-                zip: true,
-                city: true,
-                state: true,
-                country: true
-              }
-            }
-          }
-        },
-        payments: {
-          select: {
-            id: true,
-            orderId: true,
-            amount: true,
-            method: true,
-            scheduledDate: true,
-            received: true
-          }
-        },
-        fruitOrderItems: {
-          select: { id: true, orderId: true, name: true, quantity: true, boxPrice: true }
-        },
-        seedOrderItems: {
-          select: { id: true, orderId: true, name: true, quantity: true, kgPrice: true }
-        },
-        rootstockOrderItems: {
-          select: {
-            id: true,
-            orderId: true,
-            rootstockId: true,
-            rootstock: { select: { name: true } },
-            quantity: true,
-            unityPrice: true
-          }
-        },
-        borbulhaOrderItems: {
-          select: {
-            id: true,
-            orderId: true,
-            name: true,
-            quantity: true,
-            unityPrice: true,
-            greenhouseId: true,
-            greenhouse: {
-              select: {
-                label: true,
-                ownerProperty: { select: { property: { select: { name: true } } } }
-              }
-            }
-          }
-        },
-        seedlingBenchOrderItems: {
-          select: {
-            id: true,
-            orderId: true,
-            seedlingBenchId: true,
-            seedlingBench: {
-              select: {
-                label: true,
-                rootstock: { select: { name: true } },
-                greenhouse: { select: { label: true, ownerPropertyId: true } }
-              }
-            },
-            quantity: true,
-            unityPrice: true
-          }
-        }
-      }
+      select: orderSelect
     })
     return res.status(200).json(orders)
   } catch (e) {
@@ -109,93 +111,7 @@ const getOrder: RequestHandler = async (req, res) => {
     const orderId = req.params.orderId as unknown as number
     const order = await prisma.order.findUnique({
       where: { id: orderId },
-      select: {
-        id: true,
-        type: true,
-        orderDate: true,
-        deliveryDate: true,
-        nfNumber: true,
-        status: true,
-        user: { select: { id: true, name: true } },
-        customerProperty: {
-          select: {
-            customer: { select: { id: true, name: true, nickname: true } },
-            property: {
-              select: {
-                id: true,
-                producerName: true,
-                name: true,
-                cnpj: true,
-                cpf: true,
-                ie: true,
-                address: true,
-                zip: true,
-                city: true,
-                state: true,
-                country: true
-              }
-            }
-          }
-        },
-        payments: {
-          select: {
-            id: true,
-            orderId: true,
-            amount: true,
-            method: true,
-            scheduledDate: true,
-            received: true
-          }
-        },
-        fruitOrderItems: {
-          select: { id: true, orderId: true, name: true, quantity: true, boxPrice: true }
-        },
-        seedOrderItems: {
-          select: { id: true, orderId: true, name: true, quantity: true, kgPrice: true }
-        },
-        rootstockOrderItems: {
-          select: {
-            id: true,
-            orderId: true,
-            rootstockId: true,
-            rootstock: { select: { name: true } },
-            quantity: true,
-            unityPrice: true
-          }
-        },
-        borbulhaOrderItems: {
-          select: {
-            id: true,
-            orderId: true,
-            name: true,
-            quantity: true,
-            unityPrice: true,
-            greenhouseId: true,
-            greenhouse: {
-              select: {
-                label: true,
-                ownerProperty: { select: { property: { select: { name: true } } } }
-              }
-            }
-          }
-        },
-        seedlingBenchOrderItems: {
-          select: {
-            id: true,
-            orderId: true,
-            seedlingBenchId: true,
-            seedlingBench: {
-              select: {
-                label: true,
-                rootstock: { select: { name: true } },
-                greenhouse: { select: { label: true, ownerPropertyId: true } }
-              }
-            },
-            quantity: true,
-            unityPrice: true
-          }
-        }
-      }
+      select: orderSelect
     })
     return res.status(200).json(order)
   } catch (e) {

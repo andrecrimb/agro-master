@@ -21,7 +21,7 @@
   },
   "homepage": "https://github.com/andrecrimb/agro-master-api#readme",
   "dependencies": {
-    "@prisma/client": "^2.21.2",
+    "@prisma/client": "^2.29.1",
     "bcryptjs": "^2.4.3",
     "cross-env": "^7.0.3",
     "dotenv": "^8.2.0",

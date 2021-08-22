@@ -11,18 +11,25 @@ const addOrderItems: RequestHandler = async (req, res) => {
   }
 
   const orderId = req.params.orderId as unknown as number
+  const orderItems = req.body as AddSeedlingOrderItem[]
 
   try {
-    const order = await prisma.order.update({
-      where: { id: orderId },
-      data: {
-        seedlingBenchOrderItems: { createMany: { data: req.body as AddSeedlingOrderItem[] } }
-      }
-    })
+    const transactionResults = await prisma.$transaction([
+      ...orderItems.map(oI =>
+        prisma.seedlingBench.update({
+          where: { id: oI.seedlingBenchId },
+          data: { quantity: { decrement: oI.quantity } }
+        })
+      ),
+      prisma.order.update({
+        where: { id: orderId },
+        data: {
+          seedlingBenchOrderItems: { createMany: { data: req.body as AddSeedlingOrderItem[] } }
+        }
+      })
+    ])
 
-    //TODO add logic to discount benches values
-
-    res.status(201).json(order)
+    res.status(201).json(transactionResults.pop())
   } catch (e) {
     console.log(e)
     res.status(e.statusCode || 500).json(e)
