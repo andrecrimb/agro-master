@@ -191,15 +191,37 @@ const cancelOrder: RequestHandler = async (req, res) => {
   try {
     const orderId = req.params.orderId as unknown as number
 
-    //TODO
-    // add logic to put seedlings back
-
-    const order = await prisma.order.update({
+    const order = await prisma.order.findFirst({
       where: { id: orderId },
-      data: { status: 'canceled' }
+      include: { seedlingBenchOrderItems: true }
     })
+    if (!order) return new Error('no_order')
 
-    res.status(200).json(order)
+    const transactionResults = await prisma.$transaction([
+      /**
+       * order type seedling and has bench items
+       * put values back into seedlingBench
+       */
+      ...(order.type === 'seedling' && order.seedlingBenchOrderItems.length
+        ? [
+            ...order.seedlingBenchOrderItems.map(benchOrderItem =>
+              prisma.seedlingBench.update({
+                where: { id: benchOrderItem.seedlingBenchId },
+                data: { quantity: { increment: benchOrderItem.quantity } }
+              })
+            ),
+            ...order.seedlingBenchOrderItems.map(benchOrderItem =>
+              prisma.seedlingBenchOrderItem.delete({ where: { id: benchOrderItem.id } })
+            )
+          ]
+        : []),
+      prisma.order.update({
+        where: { id: orderId },
+        data: { status: 'canceled' }
+      })
+    ])
+
+    res.status(200).json(transactionResults.pop())
   } catch (e) {
     console.error(e)
     res.status(e.status || 500).json(e)
