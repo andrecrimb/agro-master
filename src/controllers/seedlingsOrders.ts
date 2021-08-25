@@ -28,7 +28,7 @@ const addOrderItems: RequestHandler = async (req, res) => {
       prisma.order.update({
         where: { id: orderId },
         data: {
-          seedlingBenchOrderItems: { createMany: { data: req.body as AddSeedlingOrderItem[] } }
+          seedlingBenchOrderItems: { createMany: { data: orderItems } }
         }
       })
     ])
