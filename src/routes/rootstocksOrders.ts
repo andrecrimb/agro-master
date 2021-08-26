@@ -11,8 +11,8 @@ router.post(
   [
     param('orderId').exists().toInt(),
     body('*.rootstockId').exists().notEmpty().toInt(),
-    body('*.quantity').exists().toInt(),
-    body('*.unityPrice').exists().toFloat()
+    body('*.quantity').exists().toInt().isInt({ min: 1 }),
+    body('*.unityPrice').exists().toFloat().isFloat({ min: 1 })
   ],
   rootstocksOrders.addOrderItems
 )

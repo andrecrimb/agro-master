@@ -11,8 +11,8 @@ router.post(
   [
     param('orderId').exists().toInt(),
     body('*.name').trim().notEmpty(),
-    body('*.quantity').exists().toInt(),
-    body('*.unityPrice').exists().toFloat()
+    body('*.quantity').exists().toInt().isInt({ min: 1 }),
+    body('*.unityPrice').exists().toFloat().isFloat({ min: 1 })
   ],
   borbulhasOrders.addOrderItems
 )

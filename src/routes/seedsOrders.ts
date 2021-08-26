@@ -11,8 +11,8 @@ router.post(
   [
     param('orderId').exists().toInt(),
     body('*.name').trim().notEmpty(),
-    body('*.quantity').exists().toInt(),
-    body('*.kgPrice').exists().toFloat()
+    body('*.quantity').exists().toInt().isInt({ min: 1 }),
+    body('*.kgPrice').exists().toFloat().isFloat({ min: 1 })
   ],
   seedsOrders.addOrderItems
 )
