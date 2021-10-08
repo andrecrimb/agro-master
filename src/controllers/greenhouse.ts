@@ -5,7 +5,11 @@ import { AddBenchBody, AddGreenhouseBody, EditGreenhouseBody } from '../types/gr
 
 const getGreenhouses: RequestHandler = async (req, res) => {
   try {
+    const ownerPropertyId = req.query.ownerPropertyId
     const greenhouses = await prisma.greenhouse.findMany({
+      where: {
+        ...(ownerPropertyId ? { ownerPropertyId: +ownerPropertyId } : {})
+      },
       select: {
         id: true,
         label: true,
@@ -27,7 +31,7 @@ const getGreenhouses: RequestHandler = async (req, res) => {
       }
     })
     return res.status(200).json(greenhouses)
-  } catch (e) {
+  } catch (e: any) {
     res.status(e.status || 500).json(e)
   }
 }
@@ -58,7 +62,7 @@ const getGreenhouse: RequestHandler = async (req, res) => {
       }
     })
     return res.status(200).json(greenhouse)
-  } catch (e) {
+  } catch (e: any) {
     res.status(e.status || 500).json(e)
   }
 }
@@ -76,7 +80,7 @@ const addGreenhouse: RequestHandler = async (req, res) => {
     })
 
     res.status(201).json(greenhouse)
-  } catch (e) {
+  } catch (e: any) {
     console.log(e)
     res.status(e.statusCode || 500).json(e)
   }
@@ -86,6 +90,8 @@ const editGreenhouse: RequestHandler = async (req, res) => {
   try {
     const params = req.params as unknown as { greenhouseId: number }
     const errors = validationResult(req)
+
+    //TODO dont allow GH type if GH has benches
 
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() })
@@ -99,7 +105,7 @@ const editGreenhouse: RequestHandler = async (req, res) => {
     })
 
     res.status(201).json(greenhouse)
-  } catch (e) {
+  } catch (e: any) {
     console.log(e)
     res.status(e.statusCode || 500).json(e)
   }
@@ -109,6 +115,8 @@ const deleteGreenhouse: RequestHandler = async (req, res) => {
   const params = req.params as unknown as { greenhouseId: number }
   const errors = validationResult(req)
 
+  //TODO dont allow GH type if GH has relations
+
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() })
   }
@@ -116,7 +124,7 @@ const deleteGreenhouse: RequestHandler = async (req, res) => {
   try {
     const greenhouse = await prisma.greenhouse.delete({ where: { id: params.greenhouseId } })
     res.status(201).json(greenhouse)
-  } catch (e) {
+  } catch (e: any) {
     console.log(e)
     res.status(e.statusCode || 500).json(e)
   }
@@ -138,7 +146,7 @@ const addBench: RequestHandler = async (req, res) => {
       data: { seedlingBenches: { create: newBench } }
     })
     res.status(201).json(bench)
-  } catch (e) {
+  } catch (e: any) {
     console.log(e)
     res.status(e.statusCode || 500).json(e)
   }
@@ -177,7 +185,7 @@ const editBench: RequestHandler = async (req, res) => {
       include: { seedlingBenches: true }
     })
     res.status(201).json(bench)
-  } catch (e) {
+  } catch (e: any) {
     res.status(e.statusCode || 500).json(e)
   }
 }
@@ -199,7 +207,7 @@ const deleteBench: RequestHandler = async (req, res) => {
     })
 
     res.status(201).json(bench)
-  } catch (e) {
+  } catch (e: any) {
     console.log(e)
     res.status(e.statusCode || 500).json(e)
   }

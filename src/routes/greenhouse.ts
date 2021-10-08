@@ -1,4 +1,4 @@
-import { body, param } from 'express-validator'
+import { body, param, query } from 'express-validator'
 import prisma from '../client'
 import express from 'express'
 import isAuthSuperUser from '../middleware/isAuthSuperUser'
@@ -7,7 +7,12 @@ import greenhouseController from '../controllers/greenhouse'
 
 const router = express.Router()
 
-router.get('/greenhouses', isAuthenticated, greenhouseController.getGreenhouses)
+router.get(
+  '/greenhouses',
+  isAuthenticated,
+  [query('ownerPropertyId').if(query('ownerPropertyId')).exists().trim().toInt()],
+  greenhouseController.getGreenhouses
+)
 router.get(
   '/greenhouses/:greenhouseId',
   isAuthenticated,
