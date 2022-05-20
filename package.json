@@ -8,6 +8,7 @@
     "preserve": "npm run build",
     "serve": "cross-env NODE_ENV=development concurrently \"tsc --watch\" \"nodemon -r dotenv/config -q dist/index.js\"",
     "prestart": "npm run build",
+    "pscale:connect:dev": "pscale connect agromaster main --port 3309",
     "start": "cross-env NODE_ENV=production node -r dotenv/config dist/index.js"
   },
   "repository": {
