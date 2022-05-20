@@ -1,0 +1,12 @@
+
+
+###  
+GET {{baseUrl}}/authuser
+
+###
+POST {{baseUrl}}/login
+
+{
+  "email": {{email_test}},
+  "password": {{password_test}}
+}

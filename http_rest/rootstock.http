@@ -1,0 +1,7 @@
+###
+POST {{baseUrl}}/rootstocks
+Authorization: {{token}}
+
+{
+  "name": ""
+}
