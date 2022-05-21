@@ -3,6 +3,7 @@ import { RequestHandler } from 'express'
 import { validationResult } from 'express-validator'
 import prisma from '../client'
 import { OrderRequest } from '../types/order'
+import { getErrorResponse } from '../utils'
 
 const orderSelect: Prisma.OrderSelect = {
   id: true,
@@ -102,7 +103,7 @@ const getOrders: RequestHandler = async (req, res) => {
     })
     return res.status(200).json(orders)
   } catch (e) {
-    res.status(e.status || 500).json(e)
+    res.status(500).json(getErrorResponse(e))
   }
 }
 
@@ -115,7 +116,7 @@ const getOrder: RequestHandler = async (req, res) => {
     })
     return res.status(200).json(order)
   } catch (e) {
-    res.status(e.status || 500).json(e)
+    res.status(500).json(getErrorResponse(e))
   }
 }
 
@@ -150,7 +151,7 @@ const addOrder: RequestHandler = async (req, res) => {
     res.status(201).json(order)
   } catch (e) {
     console.error(e)
-    res.status(e.status || 500).json(e)
+    res.status(500).json(getErrorResponse(e))
   }
 }
 
@@ -182,8 +183,7 @@ const editOrder: RequestHandler = async (req, res) => {
 
     res.status(201).json(order)
   } catch (e) {
-    console.error(e)
-    res.status(e.status || 500).json(e)
+    res.status(500).json(getErrorResponse(e))
   }
 }
 
@@ -223,8 +223,7 @@ const cancelOrder: RequestHandler = async (req, res) => {
 
     res.status(200).json(transactionResults.pop())
   } catch (e) {
-    console.error(e)
-    res.status(e.status || 500).json(e)
+    res.status(500).json(getErrorResponse(e))
   }
 }
 

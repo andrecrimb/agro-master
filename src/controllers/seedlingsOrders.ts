@@ -2,6 +2,7 @@ import { RequestHandler } from 'express'
 import { validationResult } from 'express-validator'
 import prisma from '../client'
 import { AddSeedlingOrderItem } from '../types/order'
+import { getErrorResponse } from '../utils'
 
 const addOrderItems: RequestHandler = async (req, res) => {
   const errors = validationResult(req)
@@ -35,8 +36,7 @@ const addOrderItems: RequestHandler = async (req, res) => {
 
     res.status(201).json(transactionResults.pop())
   } catch (e) {
-    console.log(e)
-    res.status(e.statusCode || 500).json(e)
+    res.status(500).json(getErrorResponse(e))
   }
 }
 
@@ -66,8 +66,7 @@ const deleteOrderItems: RequestHandler = async (req, res) => {
 
     res.status(200).json(transactionResults.pop())
   } catch (e) {
-    console.log(e)
-    res.status(e.statusCode || 500).json(e)
+    res.status(500).json(getErrorResponse(e))
   }
 }
 

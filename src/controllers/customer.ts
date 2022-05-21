@@ -7,6 +7,7 @@ import {
   EditCustomerBody,
   EditCustomerPropertyBody
 } from '../types/customer'
+import { getErrorResponse } from '../utils'
 
 const addCustomer: RequestHandler = async (req, res) => {
   const errors = validationResult(req)
@@ -26,8 +27,7 @@ const addCustomer: RequestHandler = async (req, res) => {
 
     res.status(201).json(newCustomer)
   } catch (e) {
-    console.log(e)
-    res.status(e.statusCode || 500).json(e)
+    res.status(500).json(getErrorResponse(e))
   }
 }
 
@@ -57,8 +57,7 @@ const editCustomer: RequestHandler = async (req, res) => {
 
     res.status(200).json(updatedCustomer)
   } catch (e) {
-    console.log(e)
-    res.status(e.statusCode || 500).json(e)
+    res.status(500).json(getErrorResponse(e))
   }
 }
 
@@ -101,7 +100,7 @@ const getCustomer: RequestHandler = async (req, res) => {
     })
     return res.status(200).json(customer)
   } catch (e) {
-    res.status(e.status || 500).json(e)
+    res.status(500).json(getErrorResponse(e))
   }
 }
 
@@ -122,7 +121,7 @@ const getCustomers: RequestHandler = async (req, res) => {
     })
     return res.status(200).json(customers)
   } catch (e) {
-    res.status(e.status || 500).json(e)
+    res.status(500).json(getErrorResponse(e))
   }
 }
 
@@ -138,8 +137,7 @@ const deleteCustomer: RequestHandler = async (req, res) => {
     const customer = await prisma.customer.delete({ where: { id: params.customerId } })
     res.status(201).json(customer)
   } catch (e) {
-    console.log(e)
-    res.status(e.statusCode || 500).json(e)
+    res.status(500).json(getErrorResponse(e))
   }
 }
 
@@ -161,8 +159,7 @@ const addCustomerProperty: RequestHandler = async (req, res) => {
 
     res.status(201).json(newProperty)
   } catch (e) {
-    console.log(e)
-    res.status(e.statusCode || 500).json(e)
+    res.status(500).json(getErrorResponse(e))
   }
 }
 
@@ -189,8 +186,7 @@ const editCustomerProperty: RequestHandler = async (req, res) => {
 
     res.status(201).json(property)
   } catch (e) {
-    console.log(e)
-    res.status(e.statusCode || 500).json(e)
+    res.status(500).json(getErrorResponse(e))
   }
 }
 
@@ -208,8 +204,7 @@ const deleteCustomerProperty: RequestHandler = async (req, res) => {
     })
     res.status(201).json(property)
   } catch (e) {
-    console.log(e)
-    res.status(e.statusCode || 500).json(e)
+    res.status(500).json(getErrorResponse(e))
   }
 }
 

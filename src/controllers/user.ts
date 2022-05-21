@@ -4,6 +4,7 @@ import bcrypt from 'bcryptjs'
 import { AddUserBody, EditUserBody } from '../types/user'
 import prisma from '../client'
 import { User } from '.prisma/client'
+import { getErrorResponse } from '../utils'
 
 const addNewUser: RequestHandler = async (req, res) => {
   const errors = validationResult(req)
@@ -22,8 +23,7 @@ const addNewUser: RequestHandler = async (req, res) => {
 
     res.status(201).json(newUser)
   } catch (e) {
-    console.log(e)
-    res.status(e.statusCode || 500).json(e)
+    res.status(500).json(getErrorResponse(e))
   }
 }
 
@@ -66,8 +66,7 @@ const editUser: RequestHandler = async (req, res) => {
 
     res.status(200).json(updatedUser)
   } catch (e) {
-    console.log(e)
-    res.status(e.statusCode || 500).json(e)
+    res.status(500).json(getErrorResponse(e))
   }
 }
 
@@ -87,7 +86,7 @@ const getUsers: RequestHandler = async (req, res) => {
     })
     return res.status(200).json(users)
   } catch (e) {
-    res.status(e.statusCode || 500).json(e)
+    res.status(500).json(getErrorResponse(e))
   }
 }
 
@@ -107,8 +106,7 @@ const getUser: RequestHandler = async (req, res) => {
     })
     return res.status(200).json(user)
   } catch (e) {
-    console.log(e)
-    res.status(500).json(e)
+    res.status(500).json(getErrorResponse(e))
   }
 }
 

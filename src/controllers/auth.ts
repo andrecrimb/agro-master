@@ -5,6 +5,7 @@ import jwt from 'jsonwebtoken'
 import { AuthTokenPayload } from '../types/auth'
 import prisma from '../client'
 import { User } from '.prisma/client'
+import { getErrorResponse } from '../utils'
 
 const login: RequestHandler = async (req, res) => {
   const errors = validationResult(req)
@@ -34,7 +35,7 @@ const login: RequestHandler = async (req, res) => {
 
     res.status(200).json({ token, email, id: user.id })
   } catch (e) {
-    res.status(e.statusCode || 500).json(e)
+    res.status(500).json(getErrorResponse(e))
   }
 }
 
@@ -54,8 +55,7 @@ const getAuthUser: RequestHandler = async (req, res) => {
     })
     return res.status(200).json(user)
   } catch (e) {
-    console.log(e)
-    res.status(500).json(e)
+    res.status(500).json(getErrorResponse(e))
   }
 }
 

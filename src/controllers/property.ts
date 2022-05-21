@@ -2,6 +2,7 @@ import { RequestHandler } from 'express'
 import prisma from '../client'
 import { validationResult } from 'express-validator'
 import { AddOwnerPropertyBody, EditOwnerPropertyBody } from '../types/property'
+import { getErrorResponse } from '../utils'
 
 const addNewOwnerProperty: RequestHandler = async (req, res) => {
   const errors = validationResult(req)
@@ -19,8 +20,7 @@ const addNewOwnerProperty: RequestHandler = async (req, res) => {
 
     res.status(201).json(newProperty)
   } catch (e) {
-    console.log(e)
-    res.status(e.statusCode || 500).json(e)
+    res.status(500).json(getErrorResponse(e))
   }
 }
 
@@ -42,8 +42,7 @@ const editOwnerProperty: RequestHandler = async (req, res) => {
 
     res.status(201).json(property)
   } catch (e) {
-    console.log(e)
-    res.status(e.statusCode || 500).json(e)
+    res.status(500).json(getErrorResponse(e))
   }
 }
 
@@ -73,7 +72,7 @@ const getOwnerProperty: RequestHandler = async (req, res) => {
     })
     return res.status(200).json(property)
   } catch (e) {
-    res.status(e.status || 500).json(e)
+    res.status(500).json(getErrorResponse(e))
   }
 }
 
@@ -101,7 +100,7 @@ const getOwnerProperties: RequestHandler = async (req, res) => {
     })
     return res.status(200).json(properties)
   } catch (e) {
-    res.status(e.status || 500).json(e)
+    res.status(500).json(getErrorResponse(e))
   }
 }
 
@@ -117,8 +116,7 @@ const deleteOwnerProperty: RequestHandler = async (req, res) => {
     const property = await prisma.ownerProperty.delete({ where: { id: params.ownerPropertyId } })
     res.status(201).json(property)
   } catch (e) {
-    console.log(e)
-    res.status(e.statusCode || 500).json(e)
+    res.status(500).json(getErrorResponse(e))
   }
 }
 

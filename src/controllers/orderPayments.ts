@@ -2,6 +2,7 @@ import { RequestHandler } from 'express'
 import { validationResult } from 'express-validator'
 import prisma from '../client'
 import { AddOrderPayment } from '../types/order'
+import { getErrorResponse } from '../utils'
 
 const addOrderPayments: RequestHandler = async (req, res) => {
   const errors = validationResult(req)
@@ -21,8 +22,7 @@ const addOrderPayments: RequestHandler = async (req, res) => {
     })
     res.status(201).json(order)
   } catch (e) {
-    console.log(e)
-    res.status(e.statusCode || 500).json(e)
+    res.status(500).json(getErrorResponse(e))
   }
 }
 
@@ -43,8 +43,7 @@ const editOrderPayment: RequestHandler = async (req, res) => {
     })
     res.status(201).json(payment)
   } catch (e) {
-    console.log(e)
-    res.status(e.statusCode || 500).json(e)
+    res.status(500).json(getErrorResponse(e))
   }
 }
 
@@ -63,8 +62,7 @@ const deleteOrderPayment: RequestHandler = async (req, res) => {
     })
     res.status(200).json(payment)
   } catch (e) {
-    console.log(e)
-    res.status(e.statusCode || 500).json(e)
+    res.status(500).json(getErrorResponse(e))
   }
 }
 

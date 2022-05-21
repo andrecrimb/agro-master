@@ -2,6 +2,7 @@ import { RequestHandler } from 'express'
 import prisma from '../client'
 import { validationResult } from 'express-validator'
 import { AddBenchBody, AddGreenhouseBody, EditGreenhouseBody } from '../types/greenhouse'
+import { getErrorResponse } from '../utils'
 
 const getGreenhouses: RequestHandler = async (req, res) => {
   try {
@@ -32,7 +33,7 @@ const getGreenhouses: RequestHandler = async (req, res) => {
     })
     return res.status(200).json(greenhouses)
   } catch (e: any) {
-    res.status(e.status || 500).json(e)
+    res.status(500).json(getErrorResponse(e))
   }
 }
 
@@ -81,8 +82,7 @@ const addGreenhouse: RequestHandler = async (req, res) => {
 
     res.status(201).json(greenhouse)
   } catch (e: any) {
-    console.log(e)
-    res.status(e.statusCode || 500).json(e)
+    res.status(500).json(getErrorResponse(e))
   }
 }
 
@@ -106,8 +106,7 @@ const editGreenhouse: RequestHandler = async (req, res) => {
 
     res.status(201).json(greenhouse)
   } catch (e: any) {
-    console.log(e)
-    res.status(e.statusCode || 500).json(e)
+    res.status(500).json(getErrorResponse(e))
   }
 }
 
@@ -125,8 +124,7 @@ const deleteGreenhouse: RequestHandler = async (req, res) => {
     const greenhouse = await prisma.greenhouse.delete({ where: { id: params.greenhouseId } })
     res.status(201).json(greenhouse)
   } catch (e: any) {
-    console.log(e)
-    res.status(e.statusCode || 500).json(e)
+    res.status(500).json(getErrorResponse(e))
   }
 }
 
@@ -147,8 +145,7 @@ const addBench: RequestHandler = async (req, res) => {
     })
     res.status(201).json(bench)
   } catch (e: any) {
-    console.log(e)
-    res.status(e.statusCode || 500).json(e)
+    res.status(500).json(getErrorResponse(e))
   }
 }
 
@@ -186,7 +183,7 @@ const editBench: RequestHandler = async (req, res) => {
     })
     res.status(201).json(bench)
   } catch (e: any) {
-    res.status(e.statusCode || 500).json(e)
+    res.status(500).json(getErrorResponse(e))
   }
 }
 
@@ -208,8 +205,7 @@ const deleteBench: RequestHandler = async (req, res) => {
 
     res.status(201).json(bench)
   } catch (e: any) {
-    console.log(e)
-    res.status(e.statusCode || 500).json(e)
+    res.status(500).json(getErrorResponse(e))
   }
 }
 

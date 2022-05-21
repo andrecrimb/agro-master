@@ -2,6 +2,7 @@ import prisma from '../client'
 import { RequestHandler } from 'express'
 import { validationResult } from 'express-validator'
 import { AddRootstockBody, EditRootstockBody } from '../types/rootstock'
+import { getErrorResponse } from '../utils'
 
 const addNewRootstock: RequestHandler = async (req, res) => {
   const errors = validationResult(req)
@@ -13,8 +14,7 @@ const addNewRootstock: RequestHandler = async (req, res) => {
     const newRootstock = await prisma.rootstock.create({ data: requestValues })
     res.status(201).json(newRootstock)
   } catch (e) {
-    console.log(e)
-    res.status(400).json(e)
+    res.status(500).json(getErrorResponse(e))
   }
 }
 
@@ -28,7 +28,7 @@ const getRootstocks: RequestHandler = async (req, res) => {
     })
     return res.status(200).json(rootstocks)
   } catch (e) {
-    res.status(e.status || 500).json(e)
+    res.status(500).json(getErrorResponse(e))
   }
 }
 
@@ -44,8 +44,7 @@ const deleteRootstock: RequestHandler = async (req, res) => {
     const rootstock = await prisma.rootstock.delete({ where: { id: params.rootstockId } })
     res.status(201).json(rootstock)
   } catch (e) {
-    console.log(e)
-    res.status(e.statusCode || 500).json(e)
+    res.status(500).json(getErrorResponse(e))
   }
 }
 
@@ -67,8 +66,7 @@ const editRootstock: RequestHandler = async (req, res) => {
 
     res.status(200).json(updatedRootstock)
   } catch (e) {
-    console.log(e)
-    res.status(e.statusCode || 500).json(e)
+    res.status(500).json(getErrorResponse(e))
   }
 }
 
