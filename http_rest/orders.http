@@ -1,0 +1,3 @@
+###
+PUT {{baseUrl}}/orders/4/cancel
+Authorization: {{token}}

@@ -58,7 +58,17 @@ router.put(
 router.put(
   '/orders/:orderId/cancel',
   isAuthSuperUser,
-  [param('orderId').exists().toInt()],
+  [
+    param('orderId')
+      .exists()
+      .toInt()
+      .custom(id => {
+        return prisma.order.findUnique({ where: { id } }).then(order => {
+          if (!order) return Promise.reject('order_not_found')
+          if (order.status !== 'issued') return Promise.reject('order_already_cancelled')
+        })
+      })
+  ],
   orders.cancelOrder
 )
 

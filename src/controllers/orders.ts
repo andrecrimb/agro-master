@@ -188,13 +188,20 @@ const editOrder: RequestHandler = async (req, res) => {
 }
 
 const cancelOrder: RequestHandler = async (req, res) => {
+  const errors = validationResult(req)
+
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() })
+  }
+
   try {
     const orderId = req.params.orderId as unknown as number
 
-    const order = await prisma.order.findFirst({
+    const order = await prisma.order.findUnique({
       where: { id: orderId },
       include: { seedlingBenchOrderItems: true }
     })
+
     if (!order) return new Error('no_order')
 
     const transactionResults = await prisma.$transaction([

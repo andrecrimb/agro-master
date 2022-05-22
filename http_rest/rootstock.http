@@ -5,3 +5,7 @@ Authorization: {{token}}
 {
   "name": ""
 }
+
+###
+DELETE {{baseUrl}}/rootstocks/129739128
+Authorization: {{token}}
