@@ -4,8 +4,8 @@ import prisma from '../client'
 import { AuthTokenPayload } from '../types/auth'
 
 const isSuperUser: RequestHandler = async (req, res, next) => {
-  const token = req.get('Authorization')?.split(' ')[1]
   try {
+    const token = req.get('Authorization')?.split(' ')[1]
     const decodedToken = (await jwt.verify(
       token + '',
       process.env.JWT_SECRET + ''
@@ -20,6 +20,7 @@ const isSuperUser: RequestHandler = async (req, res, next) => {
     res.locals.user = user
     next()
   } catch (e) {
+    //@ts-ignore
     if (e.name && e.message) {
       return res.status(401).json({ error: 'not_authenticated' })
     }
