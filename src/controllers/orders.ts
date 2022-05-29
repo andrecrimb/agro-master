@@ -3,7 +3,7 @@ import { RequestHandler } from 'express'
 import { validationResult } from 'express-validator'
 import prisma from '../client'
 import { OrderRequest } from '../types/order'
-import { getErrorResponse } from '../utils'
+import { getErrorResponse, responseError } from '../utils'
 
 const orderSelect: Prisma.OrderSelect = {
   id: true,
@@ -156,13 +156,9 @@ const addOrder: RequestHandler = async (req, res) => {
 }
 
 const editOrder: RequestHandler = async (req, res) => {
-  const errors = validationResult(req)
-
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() })
-  }
-
   try {
+    validationResult(req).throw()
+
     const orderId = req.params.orderId as unknown as number
     const reqBody = req.body as Omit<OrderRequest, 'type'>
 
@@ -182,19 +178,15 @@ const editOrder: RequestHandler = async (req, res) => {
     })
 
     res.status(201).json(order)
-  } catch (e) {
-    res.status(500).json(getErrorResponse(e))
+  } catch (error) {
+    responseError(res, error)
   }
 }
 
 const cancelOrder: RequestHandler = async (req, res) => {
-  const errors = validationResult(req)
-
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() })
-  }
-
   try {
+    validationResult(req).throw()
+
     const orderId = req.params.orderId as unknown as number
 
     const order = await prisma.order.findUnique({
@@ -229,8 +221,8 @@ const cancelOrder: RequestHandler = async (req, res) => {
     ])
 
     res.status(200).json(transactionResults.pop())
-  } catch (e) {
-    res.status(500).json(getErrorResponse(e))
+  } catch (error) {
+    responseError(res, error)
   }
 }
 

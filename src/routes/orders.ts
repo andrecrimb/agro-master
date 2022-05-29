@@ -1,9 +1,9 @@
 import express from 'express'
 import { body, param, query } from 'express-validator'
-import prisma from '../client'
 import isAuthSuperUser from '../middleware/isAuthSuperUser'
 import orders from '../controllers/orders'
 import { OrderType } from '@prisma/client'
+import { customerPropertyExists, orderNotCanceled } from './validators'
 
 const router = express.Router()
 
@@ -23,14 +23,7 @@ router.post(
     body('type').isIn(Object.values(OrderType)).withMessage('invalid_order_type'),
     body('orderDate').trim().notEmpty().toDate(),
     body('deliveryDate').trim().notEmpty().toDate(),
-    body('customerPropertyId')
-      .exists()
-      .toInt()
-      .custom(id => {
-        return prisma.customerProperty.findFirst({ where: { propertyId: id } }).then(property => {
-          if (!property) return Promise.reject('property_not_found')
-        })
-      })
+    body('customerPropertyId').exists().toInt().custom(customerPropertyExists)
   ],
   orders.addOrder
 )
@@ -39,18 +32,11 @@ router.put(
   '/orders/:orderId',
   isAuthSuperUser,
   [
-    param('orderId').exists().toInt(),
+    param('orderId').exists().toInt().custom(orderNotCanceled),
     body('type').not().exists(),
     body('orderDate').trim().notEmpty().toDate(),
     body('deliveryDate').trim().notEmpty().toDate(),
-    body('customerPropertyId')
-      .exists()
-      .toInt()
-      .custom(id => {
-        return prisma.customerProperty.findFirst({ where: { propertyId: id } }).then(property => {
-          if (!property) return Promise.reject('property_not_found')
-        })
-      })
+    body('customerPropertyId').exists().toInt().custom(customerPropertyExists)
   ],
   orders.editOrder
 )
@@ -58,17 +44,7 @@ router.put(
 router.put(
   '/orders/:orderId/cancel',
   isAuthSuperUser,
-  [
-    param('orderId')
-      .exists()
-      .toInt()
-      .custom(id => {
-        return prisma.order.findUnique({ where: { id } }).then(order => {
-          if (!order) return Promise.reject('order_not_found')
-          if (order.status !== 'issued') return Promise.reject('order_already_cancelled')
-        })
-      })
-  ],
+  [param('orderId').exists().toInt().custom(orderNotCanceled)],
   orders.cancelOrder
 )
 
