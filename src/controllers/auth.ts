@@ -5,16 +5,12 @@ import jwt from 'jsonwebtoken'
 import { AuthTokenPayload } from '../types/auth'
 import prisma from '../client'
 import { User } from '.prisma/client'
-import { getErrorResponse } from '../utils'
+import { responseError } from '../utils'
 
 const login: RequestHandler = async (req, res) => {
-  const errors = validationResult(req)
-
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() })
-  }
-
   try {
+    validationResult(req).throw()
+
     const {
       body: { email, password }
     } = req
@@ -34,13 +30,15 @@ const login: RequestHandler = async (req, res) => {
     const token = jwt.sign(tokenPayload, process.env.JWT_SECRET + '', { expiresIn: '7d' })
 
     res.status(200).json({ token, email, id: user.id })
-  } catch (e) {
-    res.status(500).json(getErrorResponse(e))
+  } catch (error) {
+    responseError(res, error)
   }
 }
 
 const getAuthUser: RequestHandler = async (req, res) => {
   try {
+    validationResult(req).throw()
+
     const currentUser = res.locals.user as User
     const user = await prisma.user.findUnique({
       where: { id: currentUser.id },
@@ -54,8 +52,8 @@ const getAuthUser: RequestHandler = async (req, res) => {
       }
     })
     return res.status(200).json(user)
-  } catch (e) {
-    res.status(500).json(getErrorResponse(e))
+  } catch (error) {
+    responseError(res, error)
   }
 }
 

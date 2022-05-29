@@ -121,15 +121,10 @@ const getOrder: RequestHandler = async (req, res) => {
 }
 
 const addOrder: RequestHandler = async (req, res) => {
-  const errors = validationResult(req)
-
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() })
-  }
-
-  const user = res.locals.user as User
-
   try {
+    const user = res.locals.user as User
+    validationResult(req).throw()
+
     const reqBody = req.body as OrderRequest
 
     const customerProperty = await prisma.customerProperty.findFirst({
@@ -149,9 +144,8 @@ const addOrder: RequestHandler = async (req, res) => {
     })
 
     res.status(201).json(order)
-  } catch (e) {
-    console.error(e)
-    res.status(500).json(getErrorResponse(e))
+  } catch (error) {
+    responseError(res, error)
   }
 }
 
