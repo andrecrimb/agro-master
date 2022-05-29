@@ -32,7 +32,7 @@ router.put(
   '/orders/:orderId',
   isAuthSuperUser,
   [
-    param('orderId').exists().toInt().custom(orderNotCanceled),
+    param('orderId').exists().toInt().custom(orderNotCanceled).bail(),
     body('type').not().exists(),
     body('orderDate').trim().notEmpty().toDate(),
     body('deliveryDate').trim().notEmpty().toDate(),

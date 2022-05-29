@@ -3,6 +3,7 @@ import customerController from '../controllers/customer'
 import isAuthSuperUser from '../middleware/isAuthSuperUser'
 import { body, param } from 'express-validator'
 import prisma from '../client'
+import { isCustomerCnpjOrNewCnpj, isNewCustomerCnpj } from './validators'
 
 const router = express.Router()
 
@@ -41,18 +42,7 @@ router.post(
   isAuthSuperUser,
   [
     param('customerId').exists().toInt(),
-    body('cnpj')
-      .trim()
-      .notEmpty()
-      .withMessage('field_empty')
-      .custom(value => {
-        return prisma.customerProperty
-          .findFirst({ where: { property: { cnpj: value } } })
-          .then(property => {
-            if (property) return Promise.reject('cnpj_duplicated')
-          })
-      })
-      .bail(),
+    body('cnpj').trim().notEmpty().withMessage('field_empty').custom(isNewCustomerCnpj).bail(),
     body('name').trim().notEmpty(),
     body('producerName').trim().notEmpty(),
     body('ie').trim().notEmpty(),
@@ -75,15 +65,7 @@ router.patch(
       .trim()
       .notEmpty()
       .withMessage('field_empty')
-      .custom((value, { req }) => {
-        return prisma.customerProperty
-          .findFirst({ where: { property: { cnpj: value } } })
-          .then(property => {
-            if (property && property.propertyId !== +req.params?.propertyId) {
-              return Promise.reject('cnpj_duplicated')
-            }
-          })
-      })
+      .custom(isCustomerCnpjOrNewCnpj)
       .bail(),
     body('name').if(body('name').exists()).trim().notEmpty(),
     body('producerName').if(body('producerName').exists()).trim().notEmpty(),

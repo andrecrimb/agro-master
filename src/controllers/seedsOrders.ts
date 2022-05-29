@@ -2,18 +2,13 @@ import { RequestHandler } from 'express'
 import { validationResult } from 'express-validator'
 import prisma from '../client'
 import { AddSeedOrderItem } from '../types/order'
-import { getErrorResponse } from '../utils'
+import { responseError } from '../utils'
 
 const addOrderItems: RequestHandler = async (req, res) => {
-  const errors = validationResult(req)
-
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() })
-  }
-
-  const orderId = req.params.orderId as unknown as number
-
   try {
+    validationResult(req).throw()
+
+    const orderId = req.params.orderId as unknown as number
     const order = await prisma.order.update({
       where: { id: orderId },
       data: {
@@ -21,27 +16,22 @@ const addOrderItems: RequestHandler = async (req, res) => {
       }
     })
     res.status(201).json(order)
-  } catch (e) {
-    res.status(500).json(getErrorResponse(e))
+  } catch (error) {
+    responseError(res, error)
   }
 }
 
 const deleteOrderItems: RequestHandler = async (req, res) => {
-  const errors = validationResult(req)
-
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() })
-  }
-
-  const orderItemId = req.params.orderItemId as unknown as number
-
   try {
+    validationResult(req).throw()
+
+    const orderItemId = req.params.orderItemId as unknown as number
     const orderItem = await prisma.seedOrderItem.delete({
       where: { id: orderItemId }
     })
     res.status(200).json(orderItem)
-  } catch (e) {
-    res.status(500).json(getErrorResponse(e))
+  } catch (error) {
+    responseError(res, error)
   }
 }
 

@@ -5,6 +5,7 @@ import { body, param } from 'express-validator'
 import prisma from '../client'
 import { Request } from 'express-validator/src/base'
 import { AddSeedlingOrderItem } from '../types/order'
+import { orderNotCanceled } from './validators'
 
 const router = express.Router()
 
@@ -12,11 +13,12 @@ router.post(
   '/orders/:orderId/seedlingsOrderItems',
   isAuthSuperUser,
   [
-    param('orderId').exists().toInt(),
+    param('orderId').exists().toInt().custom(orderNotCanceled).bail(),
     body('*.seedlingBenchId').exists().notEmpty().toInt(),
     body('*.unityPrice').exists().toFloat().isFloat({ min: 1 }),
     body('*.quantity').exists().toInt().isInt({ min: 1 }),
     /**
+     * TODO review logic bellow
      * Add verification to check if there are seedlings available
      */
     async (req: Request, res: any, next: any) => {
@@ -59,7 +61,10 @@ router.post(
 router.delete(
   '/orders/:orderId/seedlingsOrderItems/:orderItemId',
   isAuthSuperUser,
-  [param('orderId').exists().toInt(), param('orderItemId').exists().toInt()],
+  [
+    param('orderId').exists().toInt().custom(orderNotCanceled).bail(),
+    param('orderItemId').exists().toInt()
+  ],
   seedlingsOrders.deleteOrderItems
 )
 

@@ -11,7 +11,7 @@ router.post(
   '/orders/:orderId/payments',
   isAuthSuperUser,
   [
-    param('orderId').exists().toInt().custom(orderNotCanceled),
+    param('orderId').exists().toInt().custom(orderNotCanceled).bail(),
     body('*.amount').exists().toFloat().isFloat({ min: 1 }),
     body('*.method').isIn(Object.values(PaymentMethod)).withMessage('invalid_payment_method'),
     body('*.scheduledDate').trim().notEmpty().toDate(),
@@ -24,7 +24,7 @@ router.patch(
   '/orders/:orderId/payments/:paymentId',
   isAuthSuperUser,
   [
-    param('orderId').exists().toInt().custom(orderNotCanceled),
+    param('orderId').exists().toInt().custom(orderNotCanceled).bail(),
     param('paymentId').exists().toInt(),
     body('amount').exists().toFloat().isFloat({ min: 1 }),
     body('method').isIn(Object.values(PaymentMethod)).withMessage('invalid_payment_method'),
@@ -37,7 +37,10 @@ router.patch(
 router.delete(
   '/orders/:orderId/payments/:paymentId',
   isAuthSuperUser,
-  [param('orderId').exists().toInt().custom(orderNotCanceled), param('paymentId').exists().toInt()],
+  [
+    param('orderId').exists().toInt().custom(orderNotCanceled).bail(),
+    param('paymentId').exists().toInt()
+  ],
   orderPayments.deleteOrderPayment
 )
 

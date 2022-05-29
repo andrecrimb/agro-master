@@ -3,7 +3,7 @@ import { body, param } from 'express-validator'
 import userController from '../controllers/user'
 import isAuthenticated from '../middleware/isAuthenticated'
 import isAuthSuperUser from '../middleware/isAuthSuperUser'
-import prisma from '../client'
+import { isNewUserEmail, isUserEmailOrNewEmail } from './validators'
 
 const router = express.Router()
 
@@ -20,15 +20,7 @@ router.post(
   '/users',
   isAuthSuperUser,
   [
-    body('email')
-      .isEmail()
-      .custom(value => {
-        return prisma.user.findFirst({ where: { email: value } }).then(userFound => {
-          if (userFound) return Promise.reject('email_duplicated')
-        })
-      })
-      .bail()
-      .normalizeEmail(),
+    body('email').isEmail().custom(isNewUserEmail).bail().normalizeEmail(),
     body('name').trim().notEmpty().withMessage('field_empty'),
     body('password').trim().isLength({ min: 5 }).withMessage('short_password')
   ],
@@ -49,13 +41,7 @@ router.patch(
     body('email')
       .if(body('email').exists())
       .isEmail()
-      .custom((value, { req }) => {
-        return prisma.user.findFirst({ where: { email: value } }).then(user => {
-          if (user && user.id !== +req.params?.userId) {
-            return Promise.reject('email_duplicated')
-          }
-        })
-      })
+      .custom(isUserEmailOrNewEmail)
       .bail()
       .normalizeEmail()
   ],
