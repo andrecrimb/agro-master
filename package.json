@@ -6,7 +6,7 @@
   "scripts": {
     "build": "rimraf dist && tsc",
     "preserve": "npm run build",
-    "pscale:connect:dev": "pscale connect agromaster main --port 3309",
+    "pscale:dev": "pscale connect agromaster main --port 3309",
     "start:dev": "cross-env NODE_ENV=development ts-node-dev --respawn --transpile-only --exit-child --watch src src/index.ts"
   },
   "repository": {
