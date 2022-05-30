@@ -1,13 +1,16 @@
 import { CustomValidator } from 'express-validator'
 import prisma from '../client'
 
+//#region order
 export const orderNotCanceled: CustomValidator = (id: number) => {
   return prisma.order.findUnique({ where: { id } }).then(order => {
     if (!order) return Promise.reject('order_not_found')
     if (order.status !== 'issued') return Promise.reject('order_already_cancelled')
   })
 }
+//#endregion
 
+//#region customerProperty
 export const customerPropertyExists: CustomValidator = (propertyId: number) => {
   return prisma.customerProperty.findFirst({ where: { propertyId } }).then(property => {
     if (!property) return Promise.reject('property_not_found')
@@ -27,7 +30,9 @@ export const isCustomerCnpjOrNewCnpj: CustomValidator = (cnpj: string, { req }) 
     }
   })
 }
+//#endregion
 
+//#region user
 export const isNewUserEmail: CustomValidator = (email: string) => {
   return prisma.user.findFirst({ where: { email } }).then(userFound => {
     if (userFound) return Promise.reject('email_duplicated')
@@ -41,7 +46,14 @@ export const isUserEmailOrNewEmail: CustomValidator = (email: string, { req }) =
     }
   })
 }
+export const userExists: CustomValidator = userId => {
+  return prisma.user.findFirst({ where: { id: userId } }).then(user => {
+    if (!user) return Promise.reject('no_user')
+  })
+}
+//#endregion
 
+//#region ownerProperty
 export const ownerPropertyExists: CustomValidator = (propertyId: number) => {
   return prisma.ownerProperty.findUnique({ where: { id: propertyId } }).then(property => {
     if (!property) return Promise.reject('no_property')
@@ -61,7 +73,9 @@ export const isOwnerCnpjOrNewCnpj: CustomValidator = (cnpj: string, { req }) => 
     }
   })
 }
+//#endregion
 
+//#region greenhouse
 export const uniqueGreenhouseOnProperty: CustomValidator = (greenhouseLabel, { req }) => {
   return prisma.greenhouse
     .findFirst({
@@ -72,6 +86,14 @@ export const uniqueGreenhouseOnProperty: CustomValidator = (greenhouseLabel, { r
     })
 }
 
+export const greenhouseExists: CustomValidator = greenhouseId => {
+  return prisma.greenhouse.findFirst({ where: { id: greenhouseId } }).then(greenhouse => {
+    if (!greenhouse) return Promise.reject('no_greenhouse')
+  })
+}
+//#endregion
+
+//#region seedlingBench
 export const uniqueSeedlingBench: CustomValidator = (benchLabel, { req }) => {
   return prisma.seedlingBench
     .findFirst({ where: { label: benchLabel, greenhouseId: +`${req.params?.greenhouseId}` } })
@@ -90,12 +112,14 @@ export const uniqueSeedlingBenchInGreenhouse: CustomValidator = (benchLabel, { r
     })
 }
 
-export const greenhouseExists: CustomValidator = greenhouseId => {
-  return prisma.greenhouse.findFirst({ where: { id: greenhouseId } }).then(greenhouse => {
-    if (!greenhouse) return Promise.reject('no_greenhouse')
+export const seedlingBenchExists: CustomValidator = benchId => {
+  return prisma.seedlingBench.findFirst({ where: { id: benchId } }).then(bench => {
+    if (!bench) return Promise.reject('no_bench')
   })
 }
+//#endregion
 
+//#region rootstock
 export const rootstockExists: CustomValidator = (rootstockId: number) => {
   return prisma.rootstock.findFirst({ where: { id: rootstockId } }).then(rootstock => {
     if (!rootstock) return Promise.reject('no_rootstock')
@@ -115,15 +139,4 @@ export const isRootstockNameUnique: CustomValidator = (name: string, { req }) =>
     }
   })
 }
-
-export const userExists: CustomValidator = userId => {
-  return prisma.user.findFirst({ where: { id: userId } }).then(user => {
-    if (!user) return Promise.reject('no_user')
-  })
-}
-
-export const seedlingBenchExists: CustomValidator = benchId => {
-  return prisma.seedlingBench.findFirst({ where: { id: benchId } }).then(bench => {
-    if (!bench) return Promise.reject('no_bench')
-  })
-}
+//#endregion
