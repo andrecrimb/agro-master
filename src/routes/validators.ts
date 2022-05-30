@@ -1,5 +1,7 @@
-import { CustomValidator } from 'express-validator'
+import { Request } from 'express'
+import { body, CustomValidator } from 'express-validator'
 import prisma from '../client'
+import { AddSeedlingOrderItem } from '../types/order'
 
 //#region order
 export const orderNotCanceled: CustomValidator = (id: number) => {
@@ -112,10 +114,50 @@ export const uniqueSeedlingBenchInGreenhouse: CustomValidator = (benchLabel, { r
     })
 }
 
-export const seedlingBenchExists: CustomValidator = benchId => {
+export const seedlingBenchExists: CustomValidator = (benchId: number) => {
   return prisma.seedlingBench.findFirst({ where: { id: benchId } }).then(bench => {
     if (!bench) return Promise.reject('no_bench')
   })
+}
+
+export const seedlingQtdSumDoesNotTrespassAvailableStore = async (
+  req: Request,
+  res: any,
+  next: any
+) => {
+  const orderItems = req.body as AddSeedlingOrderItem[]
+
+  const mappedSum = new Map()
+
+  //* Creates a map with the sum of each seedlingBenchId
+  for (let i = 0; i < orderItems.length; i++) {
+    const orderItem = orderItems[i]
+    if (mappedSum.has(orderItem.seedlingBenchId)) {
+      mappedSum.set(orderItem.seedlingBenchId, {
+        index: [...mappedSum.get(orderItem.seedlingBenchId).index, i],
+        sum: orderItem.quantity + mappedSum.get(orderItem.seedlingBenchId).sum
+      })
+    } else {
+      mappedSum.set(orderItem.seedlingBenchId, { index: [i], sum: orderItem.quantity })
+    }
+  }
+
+  //* Checks if each seedling sum doesn't trespass what's available on the store
+  for (const [seedlingBenchId, orderSumItem] of mappedSum) {
+    const benchGoal = await prisma.seedlingBench.findFirst({ where: { id: +seedlingBenchId } })
+
+    if (benchGoal && orderSumItem.sum > benchGoal.quantity) {
+      for (const itemIndex of orderSumItem.index) {
+        await body(`[${itemIndex}].quantity`)
+          //? the line bellow is just to force an error
+          .isInt({ max: -10 })
+          .withMessage('quantity_requested_above_current_store')
+          .run(req)
+      }
+    }
+  }
+
+  next()
 }
 //#endregion
 
