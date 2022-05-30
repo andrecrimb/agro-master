@@ -2,7 +2,6 @@ import express from 'express'
 import customerController from '../controllers/customer'
 import isAuthSuperUser from '../middleware/isAuthSuperUser'
 import { body, param } from 'express-validator'
-import prisma from '../client'
 import { isCustomerCnpjOrNewCnpj, isNewCustomerCnpj } from './validators'
 
 const router = express.Router()

@@ -48,6 +48,20 @@ export const ownerPropertyExists: CustomValidator = (propertyId: number) => {
   })
 }
 
+export const isNewOwnerCnpj: CustomValidator = (cnpj: string) => {
+  return prisma.ownerProperty.findFirst({ where: { property: { cnpj } } }).then(property => {
+    if (property) return Promise.reject('cnpj_duplicated')
+  })
+}
+
+export const isOwnerCnpjOrNewCnpj: CustomValidator = (cnpj: string, { req }) => {
+  return prisma.ownerProperty.findFirst({ where: { property: { cnpj } } }).then(property => {
+    if (property && property.id !== +req.params?.ownerPropertyId) {
+      return Promise.reject('cnpj_duplicated')
+    }
+  })
+}
+
 export const uniqueGreenhouseOnProperty: CustomValidator = (greenhouseLabel, { req }) => {
   return prisma.greenhouse
     .findFirst({
@@ -82,9 +96,23 @@ export const greenhouseExists: CustomValidator = greenhouseId => {
   })
 }
 
-export const rootstockExists: CustomValidator = rootstockId => {
+export const rootstockExists: CustomValidator = (rootstockId: number) => {
   return prisma.rootstock.findFirst({ where: { id: rootstockId } }).then(rootstock => {
     if (!rootstock) return Promise.reject('no_rootstock')
+  })
+}
+
+export const isNewRootstockNameUnique: CustomValidator = (name: string) => {
+  return prisma.rootstock.findUnique({ where: { name } }).then(rootstock => {
+    if (rootstock) return Promise.reject('rootstock_duplicated')
+  })
+}
+
+export const isRootstockNameUnique: CustomValidator = (name: string, { req }) => {
+  return prisma.rootstock.findUnique({ where: { name } }).then(rootstock => {
+    if (rootstock && rootstock.id !== +req.params?.rootstockId) {
+      return Promise.reject('rootstock_duplicated')
+    }
   })
 }
 
